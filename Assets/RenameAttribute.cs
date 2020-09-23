@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+// Type [Rename] to rename an attribute to an different name
 
 public class RenameAttribute : PropertyAttribute
 {
