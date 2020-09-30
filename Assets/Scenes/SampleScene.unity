@@ -237,9 +237,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d44ba591a049c34c9b8314427e22adf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensitivity: 0.5
+  sensitivity: 0.6
   growthSpeed: 0.002
-  maxAngleWidth: 60
+  maxAngleWidth: 80
   nodeInterval: 5
   curviness: 0.5
 --- !u!4 &891631598

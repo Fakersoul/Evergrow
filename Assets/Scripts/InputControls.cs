@@ -19,11 +19,17 @@ public class InputControls : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (!tree)
+            Debug.LogError("Player has no tree");
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (!tree) 
+            return;
+
+
 #if UNITY_EDITOR
         isRemote = UnityEditor.EditorApplication.isRemoteConnected;
         if (!isRemote)
@@ -49,5 +55,7 @@ public class InputControls : MonoBehaviour
                 tree.ChangeGrowthDirection((pushPercentageWidth - 0.5f) * 2); //Normally bottom left of the screen we map it to [-1, 1]
             }
         }
+
+        transform.position = tree.GetTopofTree();
     }
 }
