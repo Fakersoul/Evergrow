@@ -6,26 +6,33 @@ using UnityEngine.U2D;
 public class TreeGeneration : MonoBehaviour
 {
     [Header("Manipulation settings")]
-        [SerializeField]
-        float sensitivity = 0.5f;
-        [SerializeField]
-        float growthSpeed = 0.0005f;
-        [SerializeField] [Range(0.0f, 90.0f)]
-        float maxAngleWidth = 60;
+    [SerializeField]
+    float sensitivity = 0.5f;
+    [SerializeField]
+    float growthSpeed = 0.0005f;
+    [SerializeField] [Range(0.0f, 90.0f)]
+    float maxAngleWidth = 60;
 
-        float currentAngle = 90;
-        Vector2 growthDirection = new Vector2(0.0f, 1.0f);
+    float currentAngle = 90;
+    Vector2 growthDirection = new Vector2(0.0f, 1.0f);
 
     [Header("Spline settings")]
-        [SerializeField]
-        float nodeInterval = 5.0f;
-        [SerializeField]
-        float curviness = 0.5f;
-    
-        float elapsedNewNodeTime = 0.0f;
-        int splineCount = 0;
-        SpriteShapeController spriteController;
+    [SerializeField]
+    float nodeInterval = 5.0f;
+    [SerializeField]
+    float curviness = 0.5f;
 
+    float elapsedNewNodeTime = 0.0f;
+    int splineCount = 0;
+    SpriteShapeController spriteController;
+
+    public Vector2 GrowthDirection
+    {
+        get
+        {
+            return growthDirection; 
+        }
+    }
 
     void Start()
     {
