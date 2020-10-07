@@ -53,6 +53,6 @@ public class InputControls : MonoBehaviour
             }
         }
 
-        transform.position = tree.GetTopofTree();
+        transform.position = tree.TopOfTree;
     }
 }
