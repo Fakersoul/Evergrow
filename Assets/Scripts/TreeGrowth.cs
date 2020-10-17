@@ -55,14 +55,15 @@ public class TreeGrowth : MonoBehaviour
         //Ressetting the splineController
         spriteController = GetComponent<SpriteShapeController>();
 
+
         //Clearing tree
         Spline tree = spriteController.spline;
         tree.Clear();
 
         InsertNode(new Vector2(transform.position.x, transform.position.y));
         InsertNode(new Vector2(transform.position.x, transform.position.y + 1));
-
         spriteController.transform.position = Vector3.zero;
+
 
         tree.SetRightTangent(0, growthDirection * curviness);
     }

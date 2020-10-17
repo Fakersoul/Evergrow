@@ -25,8 +25,6 @@ public class BranchGeneration : MonoBehaviour
     float attractorKillDistance = 0.5f;
 
 
-    List<Vector2> attractors = new List<Vector2>();
-
     // Start is called before the first frame update
     void Start()
     {
