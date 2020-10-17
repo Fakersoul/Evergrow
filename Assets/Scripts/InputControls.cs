@@ -4,7 +4,7 @@
 public class InputControls : MonoBehaviour
 {
     [SerializeField]
-    private TreeGeneration tree = null;
+    private TreeGrowth tree = null;
 
 #if UNITY_EDITOR
     //Only in the editor it is possible to manipulate the tree with arrow keys

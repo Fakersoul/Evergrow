@@ -3,7 +3,7 @@ using UnityEngine.U2D;
 
 [RequireComponent(typeof(SpriteShapeController))]
 [DisallowMultipleComponent]
-public class TreeGeneration : MonoBehaviour
+public class TreeGrowth : MonoBehaviour
 {
     [Header("Manipulation settings")]
     [SerializeField]
@@ -59,8 +59,10 @@ public class TreeGeneration : MonoBehaviour
         Spline tree = spriteController.spline;
         tree.Clear();
 
-        InsertNode(new Vector2(0, 0));
-        InsertNode(new Vector2(0, 1));
+        InsertNode(new Vector2(transform.position.x, transform.position.y));
+        InsertNode(new Vector2(transform.position.x, transform.position.y + 1));
+
+        spriteController.transform.position = Vector3.zero;
 
         tree.SetRightTangent(0, growthDirection * curviness);
     }
