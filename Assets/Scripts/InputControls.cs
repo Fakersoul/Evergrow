@@ -53,6 +53,6 @@ public class InputControls : MonoBehaviour
             }
         }
 
-        transform.position = tree.TopOfTree;
+        transform.position = tree.GetPoint(tree.SplineCount - 1); //Get top of Tree
     }
 }

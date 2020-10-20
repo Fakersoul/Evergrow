@@ -64,6 +64,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 681ba51035f969b46b8407931c437740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  branch: {fileID: 4281673651593928024, guid: 5d8a127e0b2a7514db76be8bf1634668, type: 3}
+  probabilityNewBranch: 10
+  amountAttractors: 20
 --- !u!1971053207 &3438270542261010864
 SpriteShapeRenderer:
   m_ObjectHideFlags: 0

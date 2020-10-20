@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Security.Cryptography;
+using UnityEngine;
 using UnityEngine.U2D;
 
 [RequireComponent(typeof(SpriteShapeController))]
@@ -23,21 +25,27 @@ public class TreeGrowth : MonoBehaviour
     float curviness = 0.5f;
 
     float elapsedNewNodeTime = 0.0f;
-    int splineCount = 0;
     SpriteShapeController spriteController;
 
-    public Vector2 GrowthDirection
-    {
-        get
-        {
-            return growthDirection; 
-        }
-    }
-    public Vector2 TopOfTree
+    public float NodeInterval 
     {
         get 
         {
-            return spriteController.spline.GetPosition(splineCount - 1);
+            return nodeInterval;
+        }
+    }
+    private Spline TreeSpline
+    {
+        get
+        {
+            return spriteController.spline;
+        }
+    }
+    public int SplineCount 
+    {
+        get 
+        {
+            return TreeSpline.GetPointCount();
         }
     }
 
@@ -71,15 +79,13 @@ public class TreeGrowth : MonoBehaviour
     //Updating tree
     void Update()
     {
-        Spline tree = spriteController.spline;
-
-        int lastPointIndex = splineCount - 1;
+        int lastPointIndex = SplineCount - 1;
 
         //New position + tngent of last node
-        Vector2 newPosition = TopOfTree;
+        Vector2 newPosition = GetPoint(SplineCount - 1);
         newPosition += (growthSpeed * growthDirection);
-        tree.SetPosition(lastPointIndex, newPosition);
-        tree.SetLeftTangent(lastPointIndex, -growthDirection * curviness);
+        TreeSpline.SetPosition(lastPointIndex, newPosition);
+        TreeSpline.SetLeftTangent(lastPointIndex, -growthDirection * curviness);
 
         //Checking if new node is necessary
         elapsedNewNodeTime += Time.deltaTime;
@@ -87,10 +93,8 @@ public class TreeGrowth : MonoBehaviour
         {
             //Spawn new node
             //Split bezier curve in middle (end points)
-            Vector2 p0 = tree.GetPosition(lastPointIndex - 1);
-            Vector2 p1 = (Vector2) tree.GetRightTangent(lastPointIndex - 1) + p0;
-            Vector2 p3 = tree.GetPosition(lastPointIndex);
-            Vector2 p2 = (Vector2) tree.GetLeftTangent(lastPointIndex) + p3;
+            Vector2 p0, p1, p2, p3;
+            GetCubicBezierCurvePoints(SplineCount - 1, out p0, out p1, out p2, out p3);
 
             Vector2 q0 = (p0 + p1) / 2.0f;
             Vector2 q1 = (p1 + p2) / 2.0f;
@@ -102,27 +106,107 @@ public class TreeGrowth : MonoBehaviour
             Vector2 point = (r0 + r1) / 2.0f;
 
             //change tangent of p0 and p3
-            tree.SetRightTangent(lastPointIndex - 1, q0 - p0);
-            tree.SetLeftTangent(lastPointIndex, q2 - p3);
+            TreeSpline.SetRightTangent(lastPointIndex - 1, q0 - p0);
+            TreeSpline.SetLeftTangent(lastPointIndex, q2 - p3);
 
             InsertNode(lastPointIndex, point); //lastPointIndex is not last point anymore!
-            tree.SetLeftTangent(lastPointIndex, r0 - point);
-            tree.SetRightTangent(lastPointIndex, r1 - point);
+            TreeSpline.SetLeftTangent(lastPointIndex, r0 - point);
+            TreeSpline.SetRightTangent(lastPointIndex, r1 - point);
 
             elapsedNewNodeTime -= nodeInterval;
         }
     }
 
+    /// <summary>
+    /// Get any node on the TreeSpline
+    /// </summary>
+    /// <param name="nodeIndex"></param>
+    /// <returns></returns>
+    public Vector2 GetPoint(int nodeIndex)
+    {
+        if (nodeIndex >= TreeSpline.GetPointCount())
+        {
+            Debug.Log("[TreeGrowth.GetPoint()] => Node index out of range");
+            return Vector2.zero;
+        }
+        return TreeSpline.GetPosition(nodeIndex);
+    }
+
+    /// <summary>
+    /// Get the 4 points that define a cubic bezier curve. Part of the spline of the tree.
+    /// </summary>
+    /// <param name="endNodeIndex">End point index</param>
+    /// <param name="p0">start point</param>
+    /// <param name="p1">control point (start)</param>
+    /// <param name="p2">control point (end)</param>
+    /// <param name="p3">end point</param>
+    public void GetCubicBezierCurvePoints(int endNodeIndex, out Vector2 p0, out Vector2 p1, out Vector2 p2, out Vector2 p3)
+    {
+        if (endNodeIndex <= 0)
+            endNodeIndex = 1;
+        else if (endNodeIndex >= SplineCount)
+            endNodeIndex = SplineCount - 1;
+
+        p0 = GetPoint(endNodeIndex - 1);
+        p1 = (Vector2)TreeSpline.GetRightTangent(endNodeIndex - 1) + p0;
+        p3 = GetPoint(endNodeIndex);
+        p2 = (Vector2)TreeSpline.GetLeftTangent(endNodeIndex) + p3;
+    }
+
+    /// <summary>
+    /// Get any point along the cubic curve
+    /// </summary>
+    /// <param name="p0">start point</param>
+    /// <param name="p1">control point (start)</param>
+    /// <param name="p2">control point (end)</param>
+    /// <param name="p3">end point</param>
+    /// <param name="t">percentage value</param>
+    /// <returns>The point on the cubic curve</returns>
+    public Vector2 GetPoint(Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3, float t) 
+    {
+        return (Mathf.Pow(1.0f - t, 3.0f) * p0) + (3.0f * Mathf.Pow(1.0f - t, 2.0f) * t * p1) + (3.0f * (1 - t) * Mathf.Pow(t, 2.0f) * p2) + (Mathf.Pow(t, 3.0f) * p3);
+    }
+
+    Vector2 GetPointDeriative(Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3, float t) 
+    {
+        return
+            Mathf.Pow(1.0f - t, 2.0f) * 3 * (p1 - p0) +
+            2 * (1.0f - t) * t * 3 * (p2 - p1) + 
+            Mathf.Pow(t, 2.0f) * 3 * (p3 - p2);
+    }
+    Vector2 GetPointTangent(Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3, float t) 
+    {
+        return GetPointDeriative(p0, p1, p2, p3, t).normalized;
+    }
+
+    /// <summary>
+    /// Get the normal of any point along the cubic curve
+    /// </summary>
+    /// <param name="p0">start point</param>
+    /// <param name="p1">control point (start)</param>
+    /// <param name="p2">control point (end)</param>
+    /// <param name="p3">end point</param>
+    /// <param name="t">percentage value</param>
+    /// <param name="leftSide">Left or Right side of the spline</param>
+    /// <returns>The normal of a point on the cubic curve</returns>
+    public Vector2 GetPointNormal(Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3, float t, bool leftSide = true) 
+    {
+        return GetPointNormal(GetPointTangent(p0, p1, p2, p3, t), leftSide);
+    }
+    Vector2 GetPointNormal(Vector2 tangent, bool leftSide = true)
+    {
+        return Quaternion.Euler(0, 0, ((leftSide ? 1.0f : -1.0f) * 90.0f)) * tangent;
+    }
+
     void InsertNode(Vector2 position)
     {
-        InsertNode(splineCount, position);
+        InsertNode(SplineCount, position);
     }
     void InsertNode(int index, Vector2 position) 
     {
         Spline tree = spriteController.spline;
         tree.InsertPointAt(index, position);
         tree.SetTangentMode(index, ShapeTangentMode.Continuous);
-        splineCount++;
     }
 
     #region Gizmos
@@ -133,13 +217,36 @@ public class TreeGrowth : MonoBehaviour
 
         if (spriteController) 
         {
-            Spline tree = spriteController.spline;
+            Vector2 p0, p1, p2, p3;
+            GetCubicBezierCurvePoints(SplineCount - 1, out p0, out p1, out p2, out p3);
 
+            Vector2 tangent = GetPointTangent(p0, p1, p2, p3, 1.0f);
+            Vector2 normal = GetPointNormal(tangent);
+            Vector2 point = GetPoint(p0, p1, p2, p3, 1.0f);
+            Gizmos.DrawLine(point, point + tangent);
+            Gizmos.DrawLine(point, point + normal);
+
+            for (int node = 0; node < SplineCount; node++)
+            {
+                Gizmos.color = Color.red;
+                Gizmos.DrawSphere(TreeSpline.GetPosition(node), 0.1f);
+                Gizmos.color = Color.magenta;
+                Vector3 nodePosition = TreeSpline.GetPosition(node);
+                Gizmos.DrawLine(nodePosition, TreeSpline.GetLeftTangent(node) + nodePosition);
+                Gizmos.DrawLine(nodePosition, TreeSpline.GetRightTangent(node) + nodePosition);
+            }
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (spriteController)
+        {
             Gizmos.color = Color.yellow;
-            Vector2 p0 = tree.GetPosition(splineCount - 1 - 1);
-            Vector2 p1 = (Vector2)tree.GetRightTangent(splineCount - 1 - 1) + p0;
-            Vector2 p3 = tree.GetPosition(splineCount - 1);
-            Vector2 p2 = (Vector2)tree.GetLeftTangent(splineCount - 1) + p3;
+
+            Vector2 p0, p1, p2, p3;
+            GetCubicBezierCurvePoints(SplineCount - 1, out p0, out p1, out p2, out p3);
+
             Gizmos.DrawLine(p0, p1);
             Gizmos.DrawLine(p1, p2);
             Gizmos.DrawLine(p2, p3);
@@ -155,26 +262,16 @@ public class TreeGrowth : MonoBehaviour
             Vector2 r0 = (q0 + q1) / 2.0f;
             Vector2 r1 = (q1 + q2) / 2.0f;
             Gizmos.DrawLine(r0, r1);
-
-            for (int node = 0; node < splineCount; node++)
-            {
-                Gizmos.color = Color.red;
-                Gizmos.DrawSphere(tree.GetPosition(node), 0.1f);
-                Gizmos.color = Color.magenta;
-                Vector3 nodePosition = tree.GetPosition(node);
-                Gizmos.DrawLine(nodePosition, tree.GetLeftTangent(node) + nodePosition);
-                Gizmos.DrawLine(nodePosition, tree.GetRightTangent(node) + nodePosition);
-            }
-
-
         }
-
-
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        
     }
     #endregion
 }
+
+
+///Comments
+///
+
+//Vector2 GetPoint(Vector2 p0, Vector2 p1, float t) 
+//{
+//    return (1.0f - t) * p0 + t * p1; 
+//}
