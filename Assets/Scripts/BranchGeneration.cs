@@ -15,12 +15,12 @@ namespace BranchColonization
     }
 }
 
-[RequireComponent(typeof(TreeGrowth))]
+[RequireComponent(typeof(GrowingSpline))]
 public class BranchGeneration : MonoBehaviour
 {
     [SerializeField]
     GameObject branch;
-    TreeGrowth tree;
+    GrowingSpline tree;
 
     [Header("Branch Settings")]
     [SerializeField]
@@ -28,6 +28,9 @@ public class BranchGeneration : MonoBehaviour
     float probabilityNewBranch = 10.0f;
     [SerializeField]
     readonly float timerNewBranch = 5.0f;
+    [SerializeField]
+    readonly int includingNodes = 2;
+
 
     float elapsedNewBranch = 0.0f;
     float addedprobability = 0.0f;
@@ -46,7 +49,7 @@ public class BranchGeneration : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        tree = GetComponent<TreeGrowth>();
+        tree = GetComponent<GrowingSpline>();
     }
 
     // Update is called once per frame
@@ -59,22 +62,26 @@ public class BranchGeneration : MonoBehaviour
             float chance = Random.Range(0.0f, 100.0f);
             if (chance < (addedprobability += probabilityNewBranch)) 
             {
-                int nodeIndex = Random.Range(1, tree.SplineCount);
+                int nodeIndex = Random.Range(tree.SplineCount - includingNodes, tree.SplineCount);
 
                 Vector2 p0, p1, p2, p3;
                 tree.GetCubicBezierCurvePoints(nodeIndex, out p0, out p1, out p2, out p3);
 
                 float percentageValue = Random.Range(0.0f, 1.0f);
 
+                bool isLeft = (Random.value > 0.5f);
 
-                GameObject newBranch = Instantiate(branch, tree.GetPoint(p0, p1, p2, p3, percentageValue), Quaternion.identity, gameObject.transform);
-                BranchGrowth branchGrowthComponent = newBranch.GetComponent<BranchGrowth>();
+                GameObject newBranch = Instantiate(branch, tree.GetPoint(p0, p1, p2, p3, percentageValue) + (Vector2)transform.position, Quaternion.Euler(0.0f, 0.0f, isLeft ? 180.0f : 0.0f), gameObject.transform);
+              
+                
+                GrowingSpline branchSpline = newBranch.GetComponent<GrowingSpline>();
+                BranchGrowthController branchController = newBranch.GetComponent<BranchGrowthController>();
 
                 //Tangents are set in the branch growth
 
-                bool boolean = (Random.value > 0.5f);
-                branchGrowthComponent.Direction = tree.GetPointNormal(p0, p1, p2, p3, percentageValue, boolean);
-                branchGrowthComponent.GenerateAttractors(amountAttractors, 5.0f, 5.0f);
+                var temp = tree.GetPointNormal(p0, p1, p2, p3, percentageValue, false);
+                branchSpline.GrowthDirection = tree.GetPointNormal(p0, p1, p2, p3, percentageValue, false);
+                branchController.GenerateAttractors(amountAttractors, 5.0f, 5.0f);
                 addedprobability = 0.0f;
             }
             //Reset timer
