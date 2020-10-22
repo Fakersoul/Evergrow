@@ -1649,5 +1649,9 @@ PrefabInstance:
       propertyPath: m_Points.Array.data[32].y
       value: 1.0499907
       objectReference: {fileID: 0}
+    - target: {fileID: 7922975428073007385, guid: 542f926d371aed7468850a64b3633c0b, type: 3}
+      propertyPath: timerNewBranch
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 542f926d371aed7468850a64b3633c0b, type: 3}

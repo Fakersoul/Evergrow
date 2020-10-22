@@ -79,7 +79,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   branch: {fileID: 4281673651593928024, guid: 5d8a127e0b2a7514db76be8bf1634668, type: 3}
   probabilityNewBranch: 10
-  timerNewBranch: 7.5
+  timerNewBranch: 6
   includingNodes: 2
   amountAttractors: 20
 --- !u!1971053207 &3438270542261010864
@@ -92,7 +92,7 @@ SpriteShapeRenderer:
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
+  m_DynamicOccludee: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
