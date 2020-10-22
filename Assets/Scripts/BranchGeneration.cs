@@ -2,16 +2,34 @@
 
 namespace BranchColonization
 {
-    struct Attractor
+    class Attractor
     {
-        public Attractor(Vector2 position, uint index)
+        public Attractor(Vector2 position, int index)
         {
             this.position = position;
             this.index = index;
+            this.distance = 0.0f;
         }
 
-        public readonly Vector2 position;
-        public readonly uint index;
+        public Vector2 Position
+        {
+            get { return position; }
+        }
+        public int Index
+        {
+            get { return index; }
+        }
+        public float Distance
+        {
+            get { return distance; }
+            set { distance = value; }
+        }
+
+
+
+        readonly Vector2 position;
+        readonly int index;
+        float distance;
     }
 }
 
@@ -27,9 +45,9 @@ public class BranchGeneration : MonoBehaviour
     [Range(0.0f, 100.0f)]
     float probabilityNewBranch = 10.0f;
     [SerializeField]
-    readonly float timerNewBranch = 5.0f;
+    float timerNewBranch = 5.0f;
     [SerializeField]
-    readonly int includingNodes = 2;
+    int includingNodes = 2;
 
 
     float elapsedNewBranch = 0.0f;
@@ -71,7 +89,8 @@ public class BranchGeneration : MonoBehaviour
 
                 bool isLeft = (Random.value > 0.5f);
 
-                GameObject newBranch = Instantiate(branch, tree.GetPoint(p0, p1, p2, p3, percentageValue) + (Vector2)transform.position, Quaternion.Euler(0.0f, 0.0f, isLeft ? 180.0f : 0.0f), gameObject.transform);
+                Vector2 branchPosition = tree.GetPoint(p0, p1, p2, p3, percentageValue);
+                GameObject newBranch = Instantiate(branch, branchPosition + (Vector2)transform.position, Quaternion.Euler(0.0f, 0.0f, isLeft ? 180.0f : 0.0f), gameObject.transform);
               
                 
                 GrowingSpline branchSpline = newBranch.GetComponent<GrowingSpline>();
@@ -79,9 +98,8 @@ public class BranchGeneration : MonoBehaviour
 
                 //Tangents are set in the branch growth
 
-                var temp = tree.GetPointNormal(p0, p1, p2, p3, percentageValue, false);
                 branchSpline.GrowthDirection = tree.GetPointNormal(p0, p1, p2, p3, percentageValue, false);
-                branchController.GenerateAttractors(amountAttractors, 5.0f, 5.0f);
+                branchController.GenerateAttractors(amountAttractors, 1.5f, 2.0f);
                 addedprobability = 0.0f;
             }
             //Reset timer

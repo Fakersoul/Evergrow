@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   growthSpeed: 0.0025
-  nodeInterval: 5
+  nodeInterval: 3
   curviness: 0.5
 --- !u!114 &6616805064579418436
 MonoBehaviour:
@@ -62,10 +62,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 454e24598c4d2f34da1c3511f9574bb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attractionRadius: 1
+  offSetAttractors: 1
+  sensitivity: 0.5
+  attractionRadius: 0.75
   attractorKillDistance: 0.5
-  growthSpeed: 0.0025
-  probablility: 1
+  avoidanceDistance: 0.2
+  maxDistance: 1.75
 --- !u!1971053207 &1416781059939236078
 SpriteShapeRenderer:
   m_ObjectHideFlags: 0

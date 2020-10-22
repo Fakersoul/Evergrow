@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.U2D;
 
@@ -23,7 +24,7 @@ public class GrowingSpline : MonoBehaviour
     Vector2 growthDirection = new Vector2(0.0f, 0.0f);
 
     #region Getters and Setters
-    #region Getters
+    //Pure Getters
     private Spline Spline 
     {
         get
@@ -31,7 +32,6 @@ public class GrowingSpline : MonoBehaviour
             return spriteController.spline;
         }
     }
-
     public int SplineCount
     {
         get
@@ -53,16 +53,30 @@ public class GrowingSpline : MonoBehaviour
             return GetPoint(TopNodeIndex);
         }
     }
-    #endregion Getters
-    #region Setters
+
+
     public Vector2 GrowthDirection 
     {
+        get 
+        {
+            return growthDirection;
+        }
         set 
         {
             growthDirection = value;
         }
     }
-    #endregion Setters
+    public float GrowthSpeed 
+    {
+        get 
+        {
+            return growthSpeed;
+        }
+        set 
+        {
+            growthSpeed = value;
+        }
+    }
     #endregion Getters and Setters
 
     #region Spline Functions
@@ -80,6 +94,11 @@ public class GrowingSpline : MonoBehaviour
             return Vector2.zero;
         }
         return Spline.GetPosition(nodeIndex);
+    }
+
+    public Vector2 GetPointWorldPos(int nodeIndex) 
+    {
+        return transform.localToWorldMatrix.MultiplyPoint(GetPoint(nodeIndex));
     }
 
     /// <summary>
@@ -169,7 +188,6 @@ public class GrowingSpline : MonoBehaviour
         Spline.SetTangentMode(index, ShapeTangentMode.Continuous);
     }
     #endregion InsertFunctions
-
     #endregion Spline Functions
 
     // Start is called before the first frame update
