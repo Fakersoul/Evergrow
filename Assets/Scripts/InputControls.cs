@@ -4,7 +4,7 @@
 public class InputControls : MonoBehaviour
 {
     [SerializeField]
-    private TreeGrowth tree = null;
+    private TreeGrowthController treeController = null;
 
 #if UNITY_EDITOR
     //Only in the editor it is possible to manipulate the tree with arrow keys
@@ -16,14 +16,14 @@ public class InputControls : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (!tree)
-            Debug.LogError("Player has no tree");
+        if (!treeController)
+            Debug.LogError("Input Controls has no tree");
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!tree) 
+        if (!treeController) 
             return;
 
 
@@ -33,11 +33,11 @@ public class InputControls : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.LeftArrow))
             {
-                tree.ChangeGrowthDirection(-1);
+                treeController.ChangeGrowthDirection(-1);
             }
             if (Input.GetKey(KeyCode.RightArrow))
             {
-                tree.ChangeGrowthDirection(1);
+                treeController.ChangeGrowthDirection(1);
             }
         }
         else
@@ -49,10 +49,8 @@ public class InputControls : MonoBehaviour
                 Debug.DrawLine(Vector3.zero, touchPosition, Color.red);
 
                 float pushPercentageWidth = Camera.main.ScreenToViewportPoint(Input.touches[i].position).x;
-                tree.ChangeGrowthDirection((pushPercentageWidth - 0.5f) * 2); //Normally bottom left of the screen we map it to [-1, 1]
+                treeController.ChangeGrowthDirection((pushPercentageWidth - 0.5f) * 2); //Normally bottom left of the screen we map it to [-1, 1]
             }
         }
-
-        transform.position = tree.TopOfTree;
     }
 }
