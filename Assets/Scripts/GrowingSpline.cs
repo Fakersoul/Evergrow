@@ -200,7 +200,7 @@ public class GrowingSpline : MonoBehaviour
     void Update()
     {
         //New position + tangent of last node
-        Vector2 newPosition = TopNode + (growthSpeed * growthDirection);
+        Vector2 newPosition = TopNode + (growthSpeed * growthDirection * Time.deltaTime);
         Spline.SetPosition(TopNodeIndex, newPosition);
         Spline.SetLeftTangent(TopNodeIndex, -growthDirection * curviness);
 

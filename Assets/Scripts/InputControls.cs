@@ -6,6 +6,9 @@ public class InputControls : MonoBehaviour
     [SerializeField]
     private TreeGrowthController treeController = null;
 
+    [SerializeField]
+    private GameObject MainMenu = null;
+
 #if UNITY_EDITOR
     //Only in the editor it is possible to manipulate the tree with arrow keys
     [SerializeField]
@@ -18,12 +21,14 @@ public class InputControls : MonoBehaviour
     {
         if (!treeController)
             Debug.LogError("Input Controls has no tree");
+        if (!MainMenu)
+            Debug.LogError("Input Controls has no main menu");
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!treeController) 
+        if (!treeController || !MainMenu) 
             return;
 
 
@@ -38,6 +43,10 @@ public class InputControls : MonoBehaviour
             if (Input.GetKey(KeyCode.RightArrow))
             {
                 treeController.ChangeGrowthDirection(1);
+            }
+            if (Input.GetKey(KeyCode.Escape))
+            {
+                MainMenu.GetComponent<MainMenu>().Pause();
             }
         }
         else

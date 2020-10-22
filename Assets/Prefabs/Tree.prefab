@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1af01159a6b24974997c3708c7bae702, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  growthSpeed: 0.0025
+  growthSpeed: 0.2
   nodeInterval: 5
   curviness: 0.3
 --- !u!114 &3438270542261010861
