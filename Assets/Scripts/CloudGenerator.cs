@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class CloudGeneratorScript : MonoBehaviour
+public class CloudGenerator : MonoBehaviour
 {
     [SerializeField]
     GameObject[] clouds;
