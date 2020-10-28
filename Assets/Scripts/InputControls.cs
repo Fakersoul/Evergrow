@@ -10,11 +10,11 @@ public class InputControls : MonoBehaviour
     private GameObject MainMenu = null;
 
 #if UNITY_EDITOR
+#endif
     //Only in the editor it is possible to manipulate the tree with arrow keys
     [SerializeField]
     [ReadOnly] 
-    bool isRemote; 
-#endif
+    bool isRemote = false; 
 
     // Start is called before the first frame update
     void Start()
@@ -34,6 +34,7 @@ public class InputControls : MonoBehaviour
 
 #if UNITY_EDITOR
         isRemote = UnityEditor.EditorApplication.isRemoteConnected;
+#endif
         if (!isRemote)
         {
             if (Input.GetKey(KeyCode.LeftArrow))
@@ -50,7 +51,7 @@ public class InputControls : MonoBehaviour
             }
         }
         else
-#endif
+//#endif
         {
             for (int i = 0; i < Input.touchCount; i++)
             {

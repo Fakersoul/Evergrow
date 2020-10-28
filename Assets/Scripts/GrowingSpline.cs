@@ -10,13 +10,22 @@ public class GrowingSpline : MonoBehaviour
 {
     [Header("Growth settings")]
     [SerializeField]
-    float growthSpeed = 0.0005f;
-
-    [Header("Spline settings")]
-    [SerializeField]
     float nodeInterval = 5.0f;
     [SerializeField]
+    float growthSpeed = 0.5f;
+    [SerializeField]
     float curviness = 0.5f;
+
+    [Header("Thickness settings")]
+    [Min(1)]
+    [SerializeField]
+    int affectiveNodes = 1;
+    [SerializeField]
+    [Range(0.0f, 1.0f)]
+    float minThickness = 0.5f;
+    [SerializeField]
+    [Range(0.0f, 1.0f)]
+    float maxThickness = 1.0f;
 
     float elapsedNewNodeTime = 0.0f;
 
@@ -182,6 +191,12 @@ public class GrowingSpline : MonoBehaviour
         Spline.SetRightTangent(index, rightTangent);
     }
 
+    void InsertNode(int index, Vector2 position, Vector2 leftTangent, Vector2 rightTangent, float height)
+    {
+        InsertNode(index, position, leftTangent, rightTangent);
+        Spline.SetHeight(index, height);
+    }
+
     void InsertNode(int index, Vector2 position)
     {
         Spline.InsertPointAt(index, position);
@@ -194,6 +209,14 @@ public class GrowingSpline : MonoBehaviour
     void Start()
     {
         spriteController = GetComponent<SpriteShapeController>();
+
+        for (int node = 0; node < SplineCount; node++)
+        {
+            Spline.SetTangentMode(node, ShapeTangentMode.Continuous);
+        }
+
+        //Set min thickness for top of spline
+        Spline.SetHeight(TopNodeIndex, minThickness);
     }
 
     // Update is called once per frame
@@ -204,30 +227,41 @@ public class GrowingSpline : MonoBehaviour
         Spline.SetPosition(TopNodeIndex, newPosition);
         Spline.SetLeftTangent(TopNodeIndex, -growthDirection * curviness);
 
-        //Checking if new node is necessary
-        elapsedNewNodeTime += Time.deltaTime;
-        if (nodeInterval <= elapsedNewNodeTime)
+        //New node 
         {
-            //Spawn new node
-            //Split bezier curve in middle (end points)
-            GetCubicBezierCurvePoints(TopNodeIndex, out Vector2 p0, out Vector2 p1, out Vector2 p2, out Vector2 p3);
+            elapsedNewNodeTime += Time.deltaTime;
+            if (nodeInterval <= elapsedNewNodeTime)
+            {
+                //Spawn new node
+                //Split bezier curve in middle (end points)
+                GetCubicBezierCurvePoints(TopNodeIndex, out Vector2 p0, out Vector2 p1, out Vector2 p2, out Vector2 p3);
 
-            Vector2 q0 = (p0 + p1) / 2.0f;
-            Vector2 q1 = (p1 + p2) / 2.0f;
-            Vector2 q2 = (p2 + p3) / 2.0f;
+                Vector2 q0 = (p0 + p1) / 2.0f;
+                Vector2 q1 = (p1 + p2) / 2.0f;
+                Vector2 q2 = (p2 + p3) / 2.0f;
 
-            Vector2 r0 = (q0 + q1) / 2.0f;
-            Vector2 r1 = (q1 + q2) / 2.0f;
+                Vector2 r0 = (q0 + q1) / 2.0f;
+                Vector2 r1 = (q1 + q2) / 2.0f;
 
-            Vector2 point = (r0 + r1) / 2.0f;
+                Vector2 point = (r0 + r1) / 2.0f;
 
-            //change tangent of p0 and p3
-            Spline.SetRightTangent(TopNodeIndex - 1, q0 - p0);
-            Spline.SetLeftTangent(TopNodeIndex, q2 - p3);
+                //change tangent of p0 and p3
+                Spline.SetRightTangent(TopNodeIndex - 1, q0 - p0);
+                Spline.SetLeftTangent(TopNodeIndex, q2 - p3);
 
-            InsertNode(TopNodeIndex, point, r0 - point, r1 - point);
+                //change the thickness of previous last node node to max
+                Spline.SetHeight(TopNodeIndex - 1, maxThickness);
 
-            elapsedNewNodeTime -= nodeInterval;
+                InsertNode(TopNodeIndex, point, r0 - point, r1 - point, (maxThickness + minThickness) / 2.0f);
+
+                elapsedNewNodeTime -= nodeInterval;
+            }
+        }
+
+        //Thickness of the tree
+        {
+            float newHeight = Mathf.Lerp((maxThickness + minThickness) / 2.0f, maxThickness, elapsedNewNodeTime / nodeInterval);
+            Spline.SetHeight(TopNodeIndex - 1, newHeight);
         }
     }
 

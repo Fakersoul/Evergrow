@@ -47,9 +47,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1af01159a6b24974997c3708c7bae702, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  growthSpeed: 0.2
   nodeInterval: 2.75
+  growthSpeed: 0.2
   curviness: 0.5
+  affectiveNodes: 1
+  minThickness: 0.2
+  maxThickness: 0.4
 --- !u!114 &6616805064579418436
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -109,7 +112,7 @@ SpriteShapeRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Color: {r: 0.16862746, g: 0.14901961, b: 0.13333334, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_MaskInteraction: 0
   m_ShapeTexture: {fileID: 0}
   m_Sprites:
@@ -152,11 +155,11 @@ MonoBehaviour:
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
-  m_SpriteShape: {fileID: 11400000, guid: 93d8e2b208c8ea8438858ac5cdb0942f, type: 2}
+  m_SpriteShape: {fileID: 11400000, guid: 3fa96cf1f3e1c7e47ac862941b623255, type: 2}
   m_FillPixelPerUnit: 100
   m_StretchTiling: 1
   m_SplineDetail: 16
-  m_AdaptiveUV: 1
+  m_AdaptiveUV: 0
   m_StretchUV: 0
   m_WorldSpaceUV: 0
   m_CornerAngleThreshold: 30
@@ -183,9 +186,9 @@ EdgeCollider2D:
   m_Offset: {x: 0, y: 0}
   m_EdgeRadius: 0.06
   m_Points:
-  - {x: -0.049999993, y: -0.00041741817}
-  - {x: 0.1, y: -0.00041741817}
-  - {x: 0.15, y: -0.00041741817}
+  - {x: 0, y: -0.001999987}
+  - {x: 0.09872593, y: -0.0019999873}
+  - {x: 0.1, y: -0.0019999873}
   m_AdjacentStartPoint: {x: 0, y: 0}
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0

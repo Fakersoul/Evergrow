@@ -1,9 +1,6 @@
 ﻿using BranchColonization;
 using System.Collections.Generic;
-using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.U2D;
 
 //Spline is being transformed later
 
@@ -20,7 +17,7 @@ public class BranchGrowthController : MonoBehaviour
     [SerializeField]
     float attractionRadius = 1.0f;
     [SerializeField]
-    float attractorKillDistance = 0.5f;
+    float attractorKillDistance = 0.3f;
 
     [SerializeField]
     float avoidanceDistance = 0.2f;
