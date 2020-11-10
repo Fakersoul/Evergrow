@@ -19,6 +19,9 @@ public class InputControls : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Time.timeScale = 2.0f;
+
+
         if (!treeController)
             Debug.LogError("Input Controls has no tree");
         if (!MainMenu)

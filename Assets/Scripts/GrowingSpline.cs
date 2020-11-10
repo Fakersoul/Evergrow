@@ -29,6 +29,7 @@ public class GrowingSpline : MonoBehaviour
 
     float elapsedNewNodeTime = 0.0f;
 
+    SpriteShape spriteShape = null;
     SpriteShapeController spriteController;
     Vector2 growthDirection = new Vector2(0.0f, 0.0f);
 
@@ -64,6 +65,18 @@ public class GrowingSpline : MonoBehaviour
     }
 
 
+    public SpriteShape SpriteShape 
+    {
+        get { return spriteShape; }
+        set 
+        { 
+            spriteShape = value;
+            if (spriteController) 
+            {
+                spriteController.spriteShape = spriteShape;
+            }
+        }
+    }
     public Vector2 GrowthDirection 
     {
         get 
@@ -89,13 +102,24 @@ public class GrowingSpline : MonoBehaviour
     #endregion Getters and Setters
 
     #region Spline Functions
-    #region GetFunctions
-    /// <summary>
-    /// Get any node on the TreeSpline
-    /// </summary>
-    /// <param name="nodeIndex"></param>
-    /// <returns></returns>
-    public Vector2 GetPoint(int nodeIndex)
+    #region SetFunctions
+    public void SetPoint(int nodeIndex, Vector2 position)
+    {
+        if (nodeIndex >= Spline.GetPointCount())
+        {
+            Debug.Log("[TreeGrowth.SetPoint()] => Node index out of range");
+            return;
+        }
+        Spline.SetPosition(nodeIndex, position);
+    }
+        #endregion SetFunctions
+        #region GetFunctions
+        /// <summary>
+        /// Get any node on the TreeSpline
+        /// </summary>
+        /// <param name="nodeIndex"></param>
+        /// <returns></returns>
+        public Vector2 GetPoint(int nodeIndex)
     {
         if (nodeIndex >= Spline.GetPointCount())
         {
@@ -217,19 +241,47 @@ public class GrowingSpline : MonoBehaviour
 
         //Set min thickness for top of spline
         Spline.SetHeight(TopNodeIndex, minThickness);
+
+        //Setting spriteShapeCorrectly
+        if (spriteShape == null) 
+        {
+            spriteShape = spriteController.spriteShape;
+        }
+        else
+        {
+            spriteController.spriteShape = spriteShape;
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        Vector2 newPosition = TopNode + (growthSpeed * growthDirection * Time.deltaTime);
+        Spline.SetPosition(TopNodeIndex, newPosition);
+        Spline.SetLeftTangent(TopNodeIndex, -growthDirection * curviness);
     }
 
     // Update is called once per frame
     void Update()
     {
         //New position + tangent of last node
-        Vector2 newPosition = TopNode + (growthSpeed * growthDirection * Time.deltaTime);
-        Spline.SetPosition(TopNodeIndex, newPosition);
-        Spline.SetLeftTangent(TopNodeIndex, -growthDirection * curviness);
+        elapsedNewNodeTime += Time.deltaTime;
+
+        //Thickness of the tree
+        {
+            for (int nrNode = 1; nrNode < affectiveNodes; nrNode++)
+            {
+                int index = -affectiveNodes + nrNode + TopNodeIndex; //Node index reversed (Topnode will never be taken)
+                if (index < 0)
+                    continue;
+
+                float t = (elapsedNewNodeTime + (nodeInterval * (affectiveNodes - nrNode))) / (nodeInterval * affectiveNodes); //T-value for lerp
+                float newHeight = Mathf.Lerp(minThickness, maxThickness, t);
+                Spline.SetHeight(index, newHeight);
+            }
+        }
 
         //New node 
         {
-            elapsedNewNodeTime += Time.deltaTime;
             if (nodeInterval <= elapsedNewNodeTime)
             {
                 //Spawn new node
@@ -249,19 +301,10 @@ public class GrowingSpline : MonoBehaviour
                 Spline.SetRightTangent(TopNodeIndex - 1, q0 - p0);
                 Spline.SetLeftTangent(TopNodeIndex, q2 - p3);
 
-                //change the thickness of previous last node node to max
-                Spline.SetHeight(TopNodeIndex - 1, maxThickness);
-
                 InsertNode(TopNodeIndex, point, r0 - point, r1 - point, (maxThickness + minThickness) / 2.0f);
 
                 elapsedNewNodeTime -= nodeInterval;
             }
-        }
-
-        //Thickness of the tree
-        {
-            float newHeight = Mathf.Lerp((maxThickness + minThickness) / 2.0f, maxThickness, elapsedNewNodeTime / nodeInterval);
-            Spline.SetHeight(TopNodeIndex - 1, newHeight);
         }
     }
 

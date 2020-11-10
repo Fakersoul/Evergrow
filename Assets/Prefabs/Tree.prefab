@@ -51,8 +51,8 @@ MonoBehaviour:
   nodeInterval: 5
   growthSpeed: 0.4
   curviness: 0.3
-  affectiveNodes: 1
-  minThickness: 0.75
+  affectiveNodes: 3
+  minThickness: 0.6
   maxThickness: 1
 --- !u!114 &3438270542261010861
 MonoBehaviour:
@@ -80,11 +80,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 681ba51035f969b46b8407931c437740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  branch: {fileID: 4281673651593928024, guid: 5d8a127e0b2a7514db76be8bf1634668, type: 3}
+  branch: {fileID: 9223057193103421248, guid: 38e7b4f3cffe9e94983819bbe2a40f83, type: 3}
   probabilityNewBranch: 10
   timerNewBranch: 4
   includingNodes: 2
   amountAttractors: 20
+  width: 6
+  height: 6
 --- !u!1971053207 &3438270542261010864
 SpriteShapeRenderer:
   m_ObjectHideFlags: 0
@@ -200,9 +202,9 @@ EdgeCollider2D:
   m_Offset: {x: 0, y: 0}
   m_EdgeRadius: 1
   m_Points:
-  - {x: -0.0019999873, y: 1}
-  - {x: -0.0019999873, y: 0.012740741}
-  - {x: -0.0019999873, y: 0}
+  - {x: 0.0019999873, y: 0}
+  - {x: 0.0019999873, y: 0.98725927}
+  - {x: 0.0019999873, y: 1}
   m_AdjacentStartPoint: {x: 0, y: 0}
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0

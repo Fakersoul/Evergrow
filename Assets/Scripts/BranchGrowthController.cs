@@ -1,5 +1,5 @@
-﻿using BranchColonization;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 //Spline is being transformed later
@@ -8,142 +8,155 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class BranchGrowthController : MonoBehaviour
 {
-    [SerializeField]
-    float offSetAttractors = 1.0f;
-    [SerializeField]
-    float sensitivity = 0.5f;
-
-    //Values become squared in start
-    [SerializeField]
-    float attractionRadius = 1.0f;
-    [SerializeField]
-    float attractorKillDistance = 0.3f;
-
-    [SerializeField]
-    float avoidanceDistance = 0.2f;
+    //[SerializeField]
+    //float avoidanceDistance = 0.2f;
 
     [SerializeField]
     float maxDistance = 2.0f;
 
+    //All the nodes
 
-    List<Attractor> attractors;
-    GrowingSpline spline;
-    EdgeCollider2D collider;
+    public BranchColonization.Node BranchTopNode { get; private set; } = null;
+    public Vector2 NodeOffset { get { return nodeOffset; } set { nodeOffset = value; } }
 
-    public void GenerateAttractors(int amount, float width, float height)
+    GrowingSpline spline = null;
+    Vector2 nodeOffset = Vector2.zero;
+
+    private void Awake()
     {
-        if (attractors == null)
-            attractors = new List<Attractor>();
-        else if (attractors.Count != 0)
-            attractors.Clear();
-
-        for (int attractorIndex = 0; attractorIndex < amount; attractorIndex++)
-        {
-            Vector2 position = new Vector2(Random.Range(offSetAttractors, offSetAttractors + width), Random.Range(-height / 4.0f, height / 2.0f)); //TODO not good
-            attractors.Add(new Attractor(position, attractorIndex));
-        }
-    }
-
-    //Not going to work with branches on branches
-    Attractor[] InfluencingAttractors(Vector2 position) 
-    {
-        List<Attractor> influencingAttractors = new List<Attractor>();
-        for (int index = 0; index < attractors.Count; index++)
-        {
-            Attractor attractor = attractors[index];
-            attractor.Distance = (attractor.Position - position).SqrMagnitude();
-
-            if (attractor.Distance <= attractionRadius) 
-            {
-                influencingAttractors.Add(attractor);
-            }
-        }
-        return influencingAttractors.ToArray();
-    }
-    void KillAttractors(Attractor[] influencingAttractors) 
-    {
-        foreach (Attractor attractor in influencingAttractors)
-        {
-            if (attractor.Distance <= attractorKillDistance) 
-            {
-                attractors.Remove(attractor);
-            }
-        }
+        BranchTopNode = new BranchColonization.Node(this);
     }
 
     void Start()
     {
         spline = GetComponent<GrowingSpline>();
-        collider = GetComponent<EdgeCollider2D>(); //TODO not safe
+        Debug.Log(spline.TopNode);
 
-        //Square values 
-        attractionRadius *= attractionRadius;
-        attractorKillDistance *= attractorKillDistance;
-        maxDistance *= maxDistance;
-
-        //BranchSpline.SetRightTangent(0, growthDirection);
-        //BranchSpline.SetLeftTangent(1, -growthDirection);
-
-        //GameObject newBranch = Instantiate(gameObject);
-        //newBranch.GetComponent<BranchGrowth>().attractors = attractors;
+        //collider = GetComponent<EdgeCollider2D>(); //TODO not safe
     }
 
     // Update is called once per frame
     void Update()
     {
-        if ((spline.GetPointWorldPos(spline.TopNodeIndex) - (Vector2)transform.position).sqrMagnitude > maxDistance)
+        BranchTopNode.Position = spline.TopNode + nodeOffset;
+
+        if (BranchTopNode.Position.sqrMagnitude > maxDistance)
         {
             spline.enabled = false;
-            this.enabled = false;
-            attractors.Clear();
-        }  
+        }
 
-
-        //RaycastHit2D[] hits = Physics2D.RaycastAll(spline.GetPointWorldPos(spline.TopNodeIndex), spline.GrowthDirection, avoidanceDistance);
-        //foreach (RaycastHit2D hit in hits) 
-        //{
-        //    if (hit.collider == collider)
-        //        continue;
-        //    else
-        //        if (hit)
-        //            Debug.Log("Hit");
-
-        //}
-
-
-        Attractor[] influencingAttractors = InfluencingAttractors(spline.TopNode);
-        if (influencingAttractors.Length == 0)
+        if (BranchTopNode.InfluencingAttractors.Count == 0)
             return;
 
-
-
-        Vector2 averagePosition = Vector2.zero;
-        foreach (Attractor attractor in influencingAttractors) 
+        Vector2 direction = Vector2.zero;
+        foreach (BranchColonization.Attractor attractor in BranchTopNode.InfluencingAttractors)
         {
-            averagePosition += attractor.Position;
+            direction += (attractor.Position - BranchTopNode.Position);
         }
-        averagePosition /= influencingAttractors.Length;
-        Vector2 newDirection = averagePosition - spline.TopNode;
-        newDirection.Normalize();
-        newDirection = new Vector2(Mathf.Lerp(spline.GrowthDirection.x, newDirection.x, sensitivity), Mathf.Lerp(spline.GrowthDirection.y, newDirection.y, sensitivity));
-
-        spline.GrowthDirection = newDirection;
-
-        KillAttractors(influencingAttractors);
+        direction.Normalize();
+        //direction = new Vector2(Mathf.Lerp(spline.GrowthDirection.x, direction.x, sensitivity), Mathf.Lerp(spline.GrowthDirection.y, direction.y, sensitivity));
+        spline.GrowthDirection = direction;
     }
 
     private void OnDrawGizmosSelected()
     {
-        if (attractors != null)
-            foreach (Attractor attractor in attractors) 
-            {
-                Gizmos.color = Color.white;
-                Vector3 position = transform.localToWorldMatrix.MultiplyPoint(attractor.Position);
-                
-                Gizmos.DrawSphere(position, 0.05f);
-            }
+        foreach (BranchColonization.Attractor attractor in BranchTopNode.InfluencingAttractors)
+        {
+            Gizmos.color = Color.blue;
+            Vector3 position = transform.localToWorldMatrix.MultiplyPoint(attractor.Position);
 
-        Gizmos.DrawRay(spline.GetPointWorldPos(spline.TopNodeIndex), spline.GrowthDirection * avoidanceDistance);
-        
+            Gizmos.DrawSphere(position, 0.05f);
+        }
     }
 }
+
+//COMMENTS
+
+//RaycastHit2D[] hits = Physics2D.RaycastAll(spline.GetPointWorldPos(spline.TopNodeIndex), spline.GrowthDirection, avoidanceDistance);
+//foreach (RaycastHit2D hit in hits) 
+//{
+//    if (hit.collider == collider)
+//        continue;
+//    else
+//        if (hit)
+//            Debug.Log("Hit");
+//}
+
+
+
+
+//public void GenerateAttractors(int amount, float width, float height)
+//{
+//    if (attractors == null)
+//        attractors = new List<Attractor>();
+//    else if (attractors.Count != 0)
+//        attractors.Clear();
+
+//    for (int attractorIndex = 0; attractorIndex < amount; attractorIndex++)
+//    {
+//        Vector2 position = new Vector2(Random.Range(offSetAttractors, offSetAttractors + width), Random.Range(-height / 4.0f, 3.0f * (height / 4.0f))); //TODO not good
+//        attractors.Add(new Attractor(position));
+//    }
+//}
+
+////Not going to work with branches on branches
+//Attractor[] InfluencingAttractors() 
+//{
+//    List<Attractor> influencingAttractors = new List<Attractor>();
+//    for (int index = 0; index < attractors.Count; index++)
+//    {
+//        Attractor attractor = attractors[index];
+//        attractor.DistanceNearestNode = (attractor.Position - spline.TopNode).SqrMagnitude();
+
+//        if (attractor.DistanceNearestNode <= attractionRadius) 
+//        {
+//            influencingAttractors.Add(attractor);
+//        }
+//    }
+//    return influencingAttractors.ToArray();
+//}
+
+//void KillAttractors(Attractor[] influencingAttractors) 
+//{
+//    foreach (Attractor attractor in influencingAttractors)
+//    {
+//        if (attractor.DistanceNearestNode <= attractorKillDistance) 
+//        {
+//            attractors.Remove(attractor);
+//        }
+//    }
+//}
+
+
+//Check if max distance is achieved
+//if ((spline.GetPointWorldPos(spline.TopNodeIndex) - (Vector2)transform.position).sqrMagnitude > maxDistance)
+//{
+//    spline.enabled = false;
+//    this.enabled = false;
+//    attractors.Clear();
+//}  
+
+//Check infuencing Attractors
+
+
+//Attractor[] influencingAttractors = InfluencingAttractors();
+//if (influencingAttractors.Length == 0)
+//    return;
+
+
+//Check if moving away from certain attractor?
+//Yes, Create new Branch and delete influencingAttractor (add to new branch)
+//No, Move to the attractors
+
+//    Vector2 direction = Vector2.zero;
+//    foreach (Attractor attractor in influencingAttractors) 
+//    {
+//        direction += (attractor.Position - spline.TopNode);
+//    }
+//    direction.Normalize();
+//    direction = new Vector2(Mathf.Lerp(spline.GrowthDirection.x, direction.x, sensitivity), Mathf.Lerp(spline.GrowthDirection.y, direction.y, sensitivity));
+//    spline.GrowthDirection = direction;
+
+//    //Delete all attractors in killing range
+//    KillAttractors(influencingAttractors);
+//}
