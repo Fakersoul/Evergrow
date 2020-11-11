@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3842864386233464844}
   - component: {fileID: 8508151780123231424}
   - component: {fileID: 2570228298504805578}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Branch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -50,7 +50,7 @@ MonoBehaviour:
   nodeInterval: 2.75
   growthSpeed: 0.2
   curviness: 0.5
-  affectiveNodes: 10
+  affectiveNodes: 20
   minThickness: 0.2
   maxThickness: 0.4
 --- !u!114 &1225782135794122704
@@ -65,6 +65,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 454e24598c4d2f34da1c3511f9574bb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxDistance: 10
 --- !u!1971053207 &3842864386233464844
 SpriteShapeRenderer:
   m_ObjectHideFlags: 0

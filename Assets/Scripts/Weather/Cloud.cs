@@ -2,14 +2,11 @@
 
 public class Cloud : MonoBehaviour
 {
-    private float _speed = 2;
-    private float _endPositionX;
+    [SerializeField]
+    float _speed = 2;
 
-    public void StartFloating(float speed, float endPositionX)
-    {
-        _speed = speed;
-        _endPositionX = endPositionX;
-    }
+    private float _endPositionX;
+    public float EndPositionX { set { _endPositionX = value; } }
 
     // Update is called once per frame
     void Update()
