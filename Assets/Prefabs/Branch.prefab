@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeInterval: 2.75
-  growthSpeed: 0.2
+  growthSpeed: 0.7
   curviness: 0.5
   affectiveNodes: 20
   minThickness: 0.2

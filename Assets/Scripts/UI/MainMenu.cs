@@ -31,7 +31,6 @@ public class MainMenu : MonoBehaviour
         Time.timeScale = 0.0f;
         gameIsPaused = true;
         gameObject.SetActive(true);
-
     }
 
     void Resume() 
