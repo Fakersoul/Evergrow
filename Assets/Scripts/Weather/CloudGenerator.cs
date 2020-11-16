@@ -3,7 +3,7 @@
 public class CloudGenerator : MonoBehaviour
 {
     [SerializeField]
-    GameObject[] clouds;
+    GameObject cloudPrefab;
 
     [SerializeField]
     float spawnRate; //Spawnrate of cloud
@@ -17,25 +17,18 @@ public class CloudGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Invoke("AttemptSpawn", spawnRate); //If does not work or is too slow, try coroutine!!! -> Use Update loop
+        Invoke("AttemptSpawn", spawnRate); //If does not work or is too slow, try coroutine!!!
 
         //Transform positions to offset of cloud generator
         startPosition -= (Vector2)transform.position;
         endPosition -= (Vector2)transform.position;
     }
 
-    private void Update()
-    {
-
-
-    }
-
     //TODO GET RID OF MAGIC NUMBERS
     void SpawnCloud()
     {
-        int randomIndex = Random.Range(0, clouds.Length);
         float startY = Random.Range(startPosition.y - 1f + transform.position.y, startPosition.y + 1f + transform.position.y);
-        GameObject Cloud = Instantiate(clouds[randomIndex], new Vector3(startPosition.x, startY), new Quaternion(), transform); //Otherwise bug on screen while playing!
+        GameObject Cloud = Instantiate(cloudPrefab, new Vector3(startPosition.x, startY), new Quaternion(), transform); //Otherwise bug on screen while playing!
         float scale = Random.Range(0.8f, 1.2f);
         Cloud.transform.localScale = new Vector2(scale, scale);
         
@@ -45,7 +38,6 @@ public class CloudGenerator : MonoBehaviour
     void AttemptSpawn()
     {
         SpawnCloud();
-
         Invoke("AttemptSpawn", spawnRate); //See the loop? This is called again in Start Method...
     }
 

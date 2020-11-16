@@ -12,9 +12,13 @@ public class SunBeam : MonoBehaviour
 
     private void OnValidate()
     {
-        if (rectTransform)
+        if (rectTransform) 
+        {
+            rectTransform.localPosition = new Vector3(0.0f, -rectTransform.rect.height/2.0f, 0.0f);
+
             if (boxCollider)
                 boxCollider.size = rectTransform.sizeDelta;
+        }
     }
 
     // Update is called once per frame
