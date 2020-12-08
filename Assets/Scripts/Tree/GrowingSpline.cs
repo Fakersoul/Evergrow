@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.U2D;
 
 [RequireComponent(typeof(SpriteShapeController))]
-
+[RequireComponent(typeof(SpriteShapeRenderer))]
 public class GrowingSpline : MonoBehaviour
 {
     [Header("Growth settings")]
@@ -30,7 +30,8 @@ public class GrowingSpline : MonoBehaviour
     float elapsedNewNodeTime = 0.0f;
 
     SpriteShape spriteShape = null;
-    SpriteShapeController spriteController;
+    SpriteShapeController spriteController = null;
+    SpriteShapeRenderer spriteRenderer = null;
     Vector2 growthDirection = new Vector2(0.0f, 0.0f);
 
     #region Getters and Setters
@@ -61,6 +62,13 @@ public class GrowingSpline : MonoBehaviour
         get
         {
             return GetPoint(TopNodeIndex);
+        }
+    }
+    public Bounds Bounds 
+    {
+        get 
+        {
+            return spriteRenderer.bounds;
         }
     }
 
@@ -233,6 +241,7 @@ public class GrowingSpline : MonoBehaviour
     void Start()
     {
         spriteController = GetComponent<SpriteShapeController>();
+        spriteRenderer = GetComponent<SpriteShapeRenderer>();
 
         for (int node = 0; node < SplineCount; node++)
         {
@@ -310,6 +319,8 @@ public class GrowingSpline : MonoBehaviour
 
     private void OnDrawGizmosSelected() 
     {
+        Gizmos.DrawWireCube(Bounds.center, Bounds.size);
+
         Vector3 temp = growthDirection;
         Debug.DrawLine(gameObject.transform.position, gameObject.transform.position + temp, Color.green);
 

@@ -3792,7 +3792,7 @@ ParticleSystem:
     maxCollisionShapes: 256
     quality: 0
     voxelSize: 0.5
-    collisionMessages: 0
+    collisionMessages: 1
     collidesWithDynamic: 1
     interiorCollisions: 0
   TriggerModule:
@@ -4823,9 +4823,9 @@ GameObject:
   - component: {fileID: 6739460361800872467}
   - component: {fileID: 3451209155845038634}
   - component: {fileID: 3451209155845038635}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Cloud
-  m_TagString: Untagged
+  m_TagString: Cloud
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

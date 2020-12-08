@@ -13,6 +13,8 @@ public class TreeGrowthController : MonoBehaviour
     float maxAngleWidth = 60;
     float currentAngle = 90;
 
+    
+
     GrowingSpline spline;
 
     // growDirection is a percentage value where -1 is left and 1 is right
@@ -58,10 +60,10 @@ public class TreeGrowthController : MonoBehaviour
 
     //}
 
-    //private void OnDrawGizmosSelected()
-    //{
-
-    //}
+    private void OnDrawGizmosSelected()
+    {
+        
+    }
     //#endregion
 }
 
