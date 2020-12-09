@@ -8,7 +8,7 @@ public class Cloud : MonoBehaviour
     float _speed = 2;
 
     [SerializeField]
-    Sprite[] sprites;
+    Sprite[] sprites = null;
 
     private float _endPositionX;
     public float EndPositionX { set { _endPositionX = value; } }

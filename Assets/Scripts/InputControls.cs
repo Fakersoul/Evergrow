@@ -4,7 +4,7 @@
 public class InputControls : MonoBehaviour
 {
     [SerializeField]
-    private TreeGrowthController treeController = null;
+    private PlayerController treeController = null;
 
     [SerializeField]
     private GameObject MainMenu = null;

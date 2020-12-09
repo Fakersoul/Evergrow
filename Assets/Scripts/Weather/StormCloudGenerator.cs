@@ -5,10 +5,10 @@ using UnityEngine;
 public class StormCloudGenerator : MonoBehaviour
 {
     [SerializeField]
-    GameObject[] stormClouds;
+    GameObject[] stormClouds = null;
 
     [SerializeField]
-    float spawnrate;
+    float spawnrate = 2.0f;
 
     [SerializeField]
     GameObject stormCloudEndpoint;
@@ -39,6 +39,4 @@ public class StormCloudGenerator : MonoBehaviour
         Invoke("AttemptStormSpawn", spawnrate);
 
     }
-
-
 }

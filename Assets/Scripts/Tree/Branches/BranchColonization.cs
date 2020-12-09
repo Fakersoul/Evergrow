@@ -22,10 +22,10 @@ public class BranchColonization : MonoBehaviour
     float maxDistance = 2.0f;
 
     [SerializeField]
-    BranchGrowthController branchGrowthController;
+    BranchController branchGrowthController = null;
 
     [SerializeField]
-    GameObject branch;
+    GameObject branch = null;
 
     public class Attractor
     {
@@ -44,7 +44,7 @@ public class BranchColonization : MonoBehaviour
 
     public class Node
     {
-        public Node(BranchGrowthController branch) 
+        public Node(BranchController branch) 
         {
             Branch = branch;
         }
@@ -56,7 +56,7 @@ public class BranchColonization : MonoBehaviour
         }
 
         public Vector2 Position { get ; set ; }
-        public BranchGrowthController Branch { get; } = null;
+        public BranchController Branch { get; } = null;
         public List<Attractor> InfluencingAttractors { get; } = new List<Attractor>();
     }
 
@@ -166,7 +166,6 @@ public class BranchColonization : MonoBehaviour
                 //If there was no new node found (could be because of a smaller distance) but there was a previous valid node
                 if (attractor.AttractingNode == null && attractor.PreviousAttractingNode != null)
                 {
-                    Debug.Log("New branch", gameObject);
                     GameObject newBranch = Instantiate(branch, gameObject.transform.position + (Vector3)attractor.PreviousAttractingNode.Position, new Quaternion(), attractor.PreviousAttractingNode.Branch.transform);
 
 
@@ -176,7 +175,7 @@ public class BranchColonization : MonoBehaviour
                     branchSpline.SpriteShape = branchGrowthController.gameObject.GetComponent<GrowingSpline>().SpriteShape;
 
 
-                    BranchGrowthController newBranchController = newBranch.GetComponent<BranchGrowthController>();
+                    BranchController newBranchController = newBranch.GetComponent<BranchController>();
 
                     addedNodes.Add(newBranchController.BranchTopNode);
                     newBranchController.NodeOffset = attractor.PreviousAttractingNode.Position;

@@ -12,7 +12,7 @@ public class GrowingSpline : MonoBehaviour
     [SerializeField]
     float nodeInterval = 5.0f;
     [SerializeField]
-    float growthSpeed = 0.5f;
+    float initialGrowthSpeed = 0.5f;
     [SerializeField]
     float curviness = 0.5f;
 
@@ -28,6 +28,7 @@ public class GrowingSpline : MonoBehaviour
     float maxThickness = 1.0f;
 
     float elapsedNewNodeTime = 0.0f;
+    float growthSpeed = 0.0f;
 
     SpriteShape spriteShape = null;
     SpriteShapeController spriteController = null;
@@ -71,7 +72,13 @@ public class GrowingSpline : MonoBehaviour
             return spriteRenderer.bounds;
         }
     }
-
+    public float InitialGrowthSpeed 
+    {
+        get 
+        {
+            return initialGrowthSpeed;
+        }
+    }
 
     public SpriteShape SpriteShape 
     {
@@ -85,6 +92,7 @@ public class GrowingSpline : MonoBehaviour
             }
         }
     }
+    //Always is normalized
     public Vector2 GrowthDirection 
     {
         get 
@@ -243,6 +251,8 @@ public class GrowingSpline : MonoBehaviour
         spriteController = GetComponent<SpriteShapeController>();
         spriteRenderer = GetComponent<SpriteShapeRenderer>();
 
+        growthSpeed = initialGrowthSpeed;
+
         for (int node = 0; node < SplineCount; node++)
         {
             Spline.SetTangentMode(node, ShapeTangentMode.Continuous);
@@ -319,7 +329,8 @@ public class GrowingSpline : MonoBehaviour
 
     private void OnDrawGizmosSelected() 
     {
-        Gizmos.DrawWireCube(Bounds.center, Bounds.size);
+        if (spriteRenderer)
+            Gizmos.DrawWireCube(Bounds.center, Bounds.size);
 
         Vector3 temp = growthDirection;
         Debug.DrawLine(gameObject.transform.position, gameObject.transform.position + temp, Color.green);

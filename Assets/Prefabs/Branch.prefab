@@ -62,7 +62,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2490398206085353333}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 454e24598c4d2f34da1c3511f9574bb9, type: 3}
+  m_Script: {fileID: 11500000, guid: 3e1d3f3d371802746bd28d8f1ee6a4bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   maxDistance: 10

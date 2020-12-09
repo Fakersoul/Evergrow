@@ -8,11 +8,11 @@ public class SunRays : MonoBehaviour
     Vector2Int direction = new Vector2Int(1, -1);
 
     [SerializeField]
-    Camera renderCamera;
-    RenderTexture renderTexture;
+    Camera renderCamera = null;
+    RenderTexture renderTexture = null;
 
     [SerializeField]
-    GameObject[] toRenderObjects;
+    GameObject[] toRenderObjects = null;
 
 #if UNITY_EDITOR
     [Space]

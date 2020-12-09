@@ -4,7 +4,7 @@
 
 [RequireComponent(typeof(GrowingSpline))]
 [DisallowMultipleComponent]
-public class BranchGrowthController : MonoBehaviour
+public class BranchController : MonoBehaviour
 {
     //[SerializeField]
     //float avoidanceDistance = 0.2f;
@@ -28,8 +28,6 @@ public class BranchGrowthController : MonoBehaviour
     void Start()
     {
         spline = GetComponent<GrowingSpline>();
-        Debug.Log(spline.TopNode);
-
         //collider = GetComponent<EdgeCollider2D>(); //TODO not safe
     }
 

@@ -43,7 +43,7 @@ public class BranchGeneration : MonoBehaviour
     {
         tree = GetComponent<GrowingSpline>();
 
-        if (!branch.GetComponentInChildren<BranchGrowthController>())
+        if (!branch.GetComponentInChildren<BranchController>())
             Debug.LogError("Branch object not correctly setup");
 
         if (!branch)

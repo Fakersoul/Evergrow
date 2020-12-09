@@ -5,7 +5,7 @@ using UnityEngine.U2D;
 
 [RequireComponent(typeof(GrowingSpline))]
 [DisallowMultipleComponent]
-public class TreeGrowthController : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     [SerializeField]
     float sensitivity = 0.5f;
@@ -13,9 +13,9 @@ public class TreeGrowthController : MonoBehaviour
     float maxAngleWidth = 60;
     float currentAngle = 90;
 
-    
-
     GrowingSpline spline;
+
+    
 
     // growDirection is a percentage value where -1 is left and 1 is right
     public void ChangeGrowthDirection(float force)
