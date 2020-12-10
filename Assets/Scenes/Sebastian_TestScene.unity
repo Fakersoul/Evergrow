@@ -1014,7 +1014,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &295740198
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1109,7 +1109,7 @@ GameObject:
   m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &376594522
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1123,9 +1123,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cloudPrefab: {fileID: 0}
-  spawnRate: 2
   endPosition: {x: 0, y: 0}
   startPosition: {x: 0, y: 0}
+  rangeSecondsUntilStorm: {x: 10, y: 20}
+  rangeSecondsUntilClear: {x: 10, y: 20}
+  transitionTime: 0
+  spawnRateNormal: 5
+  cloudColorNormal: {r: 1, g: 1, b: 1, a: 1}
+  spawnRateStorm: 5
+  cloudColorStorm: {r: 0.1, g: 0.1, b: 0.1, a: 1}
   jitterExtend: 1
   minScale: 1
   maxScale: 1
@@ -6541,7 +6547,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!199 &838143723
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -11608,7 +11614,7 @@ GameObject:
   m_Icon: {fileID: -1412012063857583412, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!199 &983834273
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -16421,7 +16427,7 @@ GameObject:
   m_Icon: {fileID: 419385456094870383, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!61 &1044942333
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -21630,7 +21636,7 @@ GameObject:
   m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1734197687
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22005,7 +22011,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2127895526
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22018,6 +22024,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8766c5968d6b8304b8f0a8e2b8e931fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rainGenerator: {fileID: 0}
   _speed: 2
   sprites: []
 --- !u!4 &2127895527

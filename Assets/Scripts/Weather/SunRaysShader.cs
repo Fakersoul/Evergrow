@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.IO;
 
-public class SunRays : MonoBehaviour
+public class SunRaysShader : MonoBehaviour
 {
     [SerializeField]
     [Tooltip("Only allowed to go to the right and down!")]

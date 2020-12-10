@@ -47,8 +47,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1af01159a6b24974997c3708c7bae702, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxLinearSpeed: 0.5
+  maxAngularSpeed: 0.5
+  maxAngularWidthDeg: 0
   nodeInterval: 2.75
-  growthSpeed: 0.7
   curviness: 0.5
   affectiveNodes: 20
   minThickness: 0.2

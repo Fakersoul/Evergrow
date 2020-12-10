@@ -12,7 +12,7 @@ public class Movement : MonoBehaviour
     float snappingTime = 2.0f;
     [SerializeField]
     [Tooltip("Distance to start the snapping")]
-    float distancce = 5.0f;
+    float distance = 5.0f;
     [SerializeField]
     [Tooltip("Offset vector of the final camera position")]
     Vector2 offsetVector = Vector2.zero;
@@ -28,7 +28,6 @@ public class Movement : MonoBehaviour
             Debug.LogError("Camera Movement has no tree");
 
         oldCameraPosition = transform.position;
-        distancce *= distancce;
     }
 
     // Update is called once per frame
@@ -37,22 +36,22 @@ public class Movement : MonoBehaviour
         Vector2 topOfTree = tree.TopNode;
 
         if (!startSnapping && topOfTree.y > transform.position.y)
-            if ((topOfTree - (Vector2)transform.position).sqrMagnitude > distancce)
+            if (topOfTree.y - transform.position.y > distance)
                 startSnapping = true;
 
         if(startSnapping)
             if (elapsedTimeCamera > snappingTime)
             {
-                transform.position = topOfTree + offsetVector;
+                transform.position = new Vector2(transform.position.x, (topOfTree + offsetVector).y);
             }
             else //Smooth transition on start
             {
                 elapsedTimeCamera += Time.deltaTime;
 
-                float newXpos = Mathf.Lerp(oldCameraPosition.x, topOfTree.x + offsetVector.x, elapsedTimeCamera / snappingTime);
+                //float newXpos = Mathf.Lerp(oldCameraPosition.x, topOfTree.x + offsetVector.x, elapsedTimeCamera / snappingTime);
                 float newYpos = Mathf.Lerp(oldCameraPosition.y, topOfTree.y + offsetVector.y, elapsedTimeCamera / snappingTime);
 
-                transform.position = new Vector2(newXpos, newYpos);
+                transform.position = new Vector2(transform.position.x, newYpos);
             }
     }
 }

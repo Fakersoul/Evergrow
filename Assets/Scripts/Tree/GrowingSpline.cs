@@ -82,7 +82,7 @@ public class GrowingSpline : MonoBehaviour
     {
         get
         {
-            return GetPoint(TopNodeIndex) + (Vector2)transform.position;
+            return transform.localToWorldMatrix.MultiplyPoint(TopNode);
         }
     }
     public Bounds Bounds 
@@ -112,16 +112,22 @@ public class GrowingSpline : MonoBehaviour
             }
         }
     }
+
     //Always is normalized
     public Vector2 GrowthDirection
     {
         get
         {
-            return steering.direction;
+            return steering.Direction;
         }
         set
         {
-            steering.direction = value;
+            Vector2 direction = value;
+            direction.Normalize();
+            steering.Direction = direction;
+
+            //Reassuring that the orientation is correctly set! (Is changed by the direction but does not take the max width into account)
+            Orientation = steering.Orientation;
         }
     }
     public float Orientation
@@ -250,6 +256,7 @@ public class GrowingSpline : MonoBehaviour
     {
         return GetPointNormal(GetPointTangent(p0, p1, p2, p3, t), leftSide);
     }
+
     Vector2 GetPointNormal(Vector2 tangent, bool leftSide = true)
     {
         return Quaternion.Euler(0, 0, ((leftSide ? 1.0f : -1.0f) * 90.0f)) * tangent;
@@ -316,14 +323,14 @@ public class GrowingSpline : MonoBehaviour
     {
         Vector2 newPosition = TopNode + (steering.linearVelocity * Time.deltaTime);
         Spline.SetPosition(TopNodeIndex, newPosition);
-        Spline.SetLeftTangent(TopNodeIndex, -steering.direction * curviness);
+        Spline.SetLeftTangent(TopNodeIndex, -steering.Direction * curviness);
     }
 
     // Update is called once per frame
     void Update()
     {
         //Setting new linearVelocity
-        steering.linearVelocity = steering.direction * growthSpeed;
+        steering.linearVelocity = steering.Direction * growthSpeed;
 
         //New position + tangent of last node
         elapsedNewNodeTime += Time.deltaTime;
@@ -375,7 +382,7 @@ public class GrowingSpline : MonoBehaviour
         if (spriteRenderer)
             Gizmos.DrawWireCube(Bounds.center, Bounds.size);
 
-        Vector3 temp = steering.direction;
+        Vector3 temp = steering.Direction;
         
 
         Debug.DrawLine(gameObject.transform.position, gameObject.transform.position + temp, Color.green);
@@ -420,12 +427,3 @@ public class GrowingSpline : MonoBehaviour
         }
     }
 }
-
-
-///Comments
-///
-
-//Vector2 GetPoint(Vector2 p0, Vector2 p1, float t) 
-//{
-//    return (1.0f - t) * p0 + t * p1; 
-//}

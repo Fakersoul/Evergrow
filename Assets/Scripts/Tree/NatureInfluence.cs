@@ -83,6 +83,11 @@ public class NatureInfluence : MonoBehaviour
         waterLevel += ((float)numCollisionEvents / amountRaindrops) * waterIncrease;
     }
 
+    public void OnSunCollision()
+    {
+        sunLevel += Time.deltaTime * sunIncrease;
+    }
+
     void OnDrawGizmosSelected()
     {
 
