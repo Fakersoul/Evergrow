@@ -5,14 +5,14 @@ using UnityEngine;
 using UnityEngine.U2D;
 
 [RequireComponent(typeof(SpriteShapeController))]
-
+[RequireComponent(typeof(SpriteShapeRenderer))]
 public class GrowingSpline : MonoBehaviour
 {
     [Header("Growth settings")]
     [SerializeField]
     float nodeInterval = 5.0f;
     [SerializeField]
-    float growthSpeed = 0.5f;
+    float initialGrowthSpeed = 0.5f;
     [SerializeField]
     float curviness = 0.5f;
 
@@ -28,9 +28,11 @@ public class GrowingSpline : MonoBehaviour
     float maxThickness = 1.0f;
 
     float elapsedNewNodeTime = 0.0f;
+    float growthSpeed = 0.0f;
 
     SpriteShape spriteShape = null;
-    SpriteShapeController spriteController;
+    SpriteShapeController spriteController = null;
+    SpriteShapeRenderer spriteRenderer = null;
     Vector2 growthDirection = new Vector2(0.0f, 0.0f);
 
     #region Getters and Setters
@@ -63,7 +65,20 @@ public class GrowingSpline : MonoBehaviour
             return GetPoint(TopNodeIndex);
         }
     }
-
+    public Bounds Bounds 
+    {
+        get 
+        {
+            return spriteRenderer.bounds;
+        }
+    }
+    public float InitialGrowthSpeed 
+    {
+        get 
+        {
+            return initialGrowthSpeed;
+        }
+    }
 
     public SpriteShape SpriteShape 
     {
@@ -77,6 +92,7 @@ public class GrowingSpline : MonoBehaviour
             }
         }
     }
+    //Always is normalized
     public Vector2 GrowthDirection 
     {
         get 
@@ -233,6 +249,9 @@ public class GrowingSpline : MonoBehaviour
     void Start()
     {
         spriteController = GetComponent<SpriteShapeController>();
+        spriteRenderer = GetComponent<SpriteShapeRenderer>();
+
+        growthSpeed = initialGrowthSpeed;
 
         for (int node = 0; node < SplineCount; node++)
         {
@@ -310,6 +329,9 @@ public class GrowingSpline : MonoBehaviour
 
     private void OnDrawGizmosSelected() 
     {
+        if (spriteRenderer)
+            Gizmos.DrawWireCube(Bounds.center, Bounds.size);
+
         Vector3 temp = growthDirection;
         Debug.DrawLine(gameObject.transform.position, gameObject.transform.position + temp, Color.green);
 

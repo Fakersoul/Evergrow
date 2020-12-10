@@ -10,14 +10,14 @@ GameObject:
   m_Component:
   - component: {fileID: 3438270542261010862}
   - component: {fileID: 3900038092147495233}
-  - component: {fileID: 3438270542261010861}
+  - component: {fileID: 3772081931127286200}
   - component: {fileID: 7922975428073007385}
   - component: {fileID: 3438270542261010864}
   - component: {fileID: 3438270542261010863}
   - component: {fileID: 5958162887648739597}
   m_Layer: 9
   m_Name: Tree
-  m_TagString: Untagged
+  m_TagString: Tree
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -49,12 +49,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeInterval: 5
-  growthSpeed: 0.8
+  initialGrowthSpeed: 0.5
   curviness: 0.3
   affectiveNodes: 3
   minThickness: 0.6
   maxThickness: 1
---- !u!114 &3438270542261010861
+--- !u!114 &3772081931127286200
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -63,11 +63,83 @@ MonoBehaviour:
   m_GameObject: {fileID: 3438270542261010860}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d44ba591a049c34c9b8314427e22adf, type: 3}
+  m_Script: {fileID: 11500000, guid: 564edfbcf1f56e5439542122a1f32391, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensitivity: 0.6
-  maxAngleWidth: 70
+  waterLevel: 75
+  sunLevel: 75
+  amountSeconds: 2
+  waterDecline: 1
+  sunDecline: 1
+  amountRaindrops: 2
+  waterIncrease: 1
+  sunIncrease: 1
+  influenceCurveSunlight:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.25
+      inSlope: 0.0009040592
+      outSlope: 0.0009040592
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.23811176
+    - serializedVersion: 3
+      time: 60
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 100
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  influenceCurveWater:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.25
+      inSlope: 0.00004053756
+      outSlope: 0.00004053756
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.3358293
+    - serializedVersion: 3
+      time: 60
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 65
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 100
+      value: 1
+      inSlope: -0
+      outSlope: 0
+      tangentMode: 5
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!114 &7922975428073007385
 MonoBehaviour:
   m_ObjectHideFlags: 0
