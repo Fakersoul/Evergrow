@@ -1,22 +1,45 @@
 ﻿using System;
 using UnityEngine;
 
+[Serializable]
 public struct SteeringParameters
 {
     public Vector2 position;
+    public Vector2 direction;
+
     public Vector2 linearVelocity; //should have been normalized
+    public float angularVelocity;
 
-    //public float orientation;
-    //public float currentLinearSpeed;
 
-    //float angularVelocity;
-    //float maxAngularSpeed;    
+    public float Orientation
+    {
+        get
+        {
+            float angleX = Mathf.Acos(direction.x);
+            float angleY = Mathf.Acos(direction.y);
+
+            if (angleY >= 0.0f)
+                return angleX;
+            else
+                return angleX + Mathf.PI;
+        }
+        set
+        {
+            direction = new Vector2(Mathf.Cos(value), Mathf.Sin(value));
+        }
+    }
+    //public Vector2 LinearVelocity { set { linearVelocity = value;  } }
 }
-    //public float maxLinearSpeed; -> Is currently used in growing spline should go out of it
+
+public struct SteeringOutput 
+{
+    public Vector2 linearVelocity;
+    public Vector2 angularVelocity;
+}
 
 public abstract class SteeringBehaviour
 {
-    public abstract Vector2 CalculateSteering(float deltaTime, SteeringParameters parameters);
+    public abstract SteeringOutput CalculateSteering(float deltaTime, SteeringParameters parameters);
     public void SetTarget(Vector2 target) { targetPosition = target; }
 
     protected Vector2 targetPosition = Vector2.zero;
@@ -24,47 +47,102 @@ public abstract class SteeringBehaviour
 
 public class Seek : SteeringBehaviour
 {
-    public override Vector2 CalculateSteering(float deltaTime, SteeringParameters parameters)
+    public override SteeringOutput CalculateSteering(float deltaTime, SteeringParameters parameters)
     {
-        Vector2 velocity;
+        SteeringOutput steering = new SteeringOutput();
 
-        velocity = targetPosition - parameters.position;
-        velocity.Normalize();
+        steering.linearVelocity = targetPosition - parameters.position;
+        steering.linearVelocity.Normalize();
         //velocity *= parameters.maxLinearSpeed;
 
-        return velocity;
+        return steering;
     }
 }
 
 [Serializable]
-public class Wander : Seek
+public class Wander : SteeringBehaviour
 {
-    public override Vector2 CalculateSteering(float deltaTime, SteeringParameters parameters)
+    public override SteeringOutput CalculateSteering(float deltaTime, SteeringParameters parameters)
     {
-        float halfJitter = maxJitterOffset / 2.0f;
-        Vector2 randomOffset = new Vector2(UnityEngine.Random.Range(-halfJitter, halfJitter), UnityEngine.Random.Range(-halfJitter, halfJitter));
+        SteeringOutput steering = new SteeringOutput();
 
-        wanderTarget += randomOffset;
-        wanderTarget.Normalize();
-        wanderTarget *= radius;
+        Vector2 circleCenter = parameters.direction * distance;
+        Vector2 displacement = new Vector2(Mathf.Cos(wanderAngle), Mathf.Sin(wanderAngle)) * radius;
 
-        Vector2 addOffset = parameters.linearVelocity;
-        addOffset *= distance;
+        wanderAngle += UnityEngine.Random.value * angleChange - angleChange / 2.0f;
 
-        targetPosition = parameters.position + addOffset + wanderTarget;
+        steering.linearVelocity = circleCenter + displacement;
 
+        return steering;
+    }
+
+    public float Distance { get { return distance; } }
+    public float Radius { get { return radius; } }
+    public float AngleChange { get { return angleChange; } }
+    public float WanderAngle { set { wanderAngle = value; } }
+
+    [SerializeField]
+    [Min(0.0f)]
+    float distance = 10.0f ;
+    [SerializeField]
+    [Min(0.0f)]
+    float radius = 1.0f;
+    [SerializeField]
+    [Min(0.0f)]
+    float angleChange = 0.05f;
+
+    float wanderAngle = 0.0f;
+}
+
+public class Flee : Seek
+{
+    public override SteeringOutput CalculateSteering(float deltaTime, SteeringParameters parameters)
+    {
+        SteeringOutput steering = base.CalculateSteering(deltaTime, parameters);
+        steering.linearVelocity *= -1;
+        return steering;
+    }
+}
+
+public class Evade : Flee
+{
+    public override SteeringOutput CalculateSteering(float deltaTime, SteeringParameters parameters)
+    {
+        SteeringOutput steering = new SteeringOutput();
+
+        float squaredDist = (targetPosition - parameters.position).SqrMagnitude();
+
+        if (squaredDist > (evadeRadius * evadeRadius))
+            return steering;
+
+        targetPosition = targetPosition + (parameters.linearVelocity * (squaredDist / (strenght * strenght)));
+        
         return base.CalculateSteering(deltaTime, parameters);
     }
 
-    public float Distance { get { return distance; } set { distance = value; } } 
-    public float Radius { get { return radius; } set { radius = value; } } 
-    public float MaxJitterOffset { get { return maxJitterOffset; } set { maxJitterOffset = value; } } 
+    float evadeRadius = 2.0f;
+    float strenght = 1.0f;
+}
 
-    [SerializeField]
-    protected float distance = 6.0f ;
-    [SerializeField]
-    protected float radius = 1.0f;
-    [SerializeField]
-    protected float maxJitterOffset = 0.1f;
-    protected Vector2 wanderTarget = new Vector2(0, 1);
+public class Avoidance : SteeringBehaviour
+{
+    public override SteeringOutput CalculateSteering(float deltaTime, SteeringParameters parameters)
+    {
+        SteeringOutput steering = new SteeringOutput();
+
+        Vector2 ahead = parameters.position + parameters.direction * maxSeeAhead;
+        Vector2 ahead2 = parameters.position + parameters.direction * maxSeeAhead * 0.5f;
+        Vector2 self = parameters.position;
+
+        // the property "center" of the obstacle is a Vector3D.
+        float evasionRadius = radius * radius;
+        if ((targetPosition - ahead).SqrMagnitude() <= evasionRadius || (targetPosition - ahead2).SqrMagnitude() <= evasionRadius || (targetPosition - self).SqrMagnitude() <= evasionRadius)
+        {
+            steering.linearVelocity = (ahead - targetPosition).normalized;
+        }
+        return steering;
+    }
+
+    float radius = 5.0f;
+    float maxSeeAhead = 2.0f;
 }

@@ -15,10 +15,10 @@ public class WeatherGenerator : MonoBehaviour
     [Header("Generic weather settings")]
     [SerializeField]
     [Min(0.0f)]
-    Vector2 rangeSecondsUntilStorm;
+    Vector2 rangeSecondsUntilStorm = new Vector2(10, 20);
     [SerializeField]
     [Min(0.0f)]
-    Vector2 rangeSecondsUntilClear;
+    Vector2 rangeSecondsUntilClear = new Vector2(10, 20);
     [SerializeField]
     float transitionTime = 0.0f;
 

@@ -10,9 +10,15 @@ public class GrowingSpline : MonoBehaviour
 {
     [Header("Growth settings")]
     [SerializeField]
-    float nodeInterval = 5.0f;
+    float maxLinearSpeed = 0.5f;
     [SerializeField]
-    float initialGrowthSpeed = 0.5f;
+    float maxAngularSpeed = 0.5f;
+    [SerializeField]
+    [Range(0.0f, 90.0f)]
+    float maxAngularWidthDeg = 60.0f;
+
+    [SerializeField]
+    float nodeInterval = 5.0f;
     [SerializeField]
     float curviness = 0.5f;
 
@@ -27,16 +33,23 @@ public class GrowingSpline : MonoBehaviour
     [Range(0.0f, 1.0f)]
     float maxThickness = 1.0f;
 
-    float elapsedNewNodeTime = 0.0f;
-    float growthSpeed = 0.0f;
 
     SpriteShape spriteShape = null;
     SpriteShapeController spriteController = null;
     SpriteShapeRenderer spriteRenderer = null;
-    Vector2 growthDirection = new Vector2(0.0f, 0.0f);
+
+    SteeringParameters steering = new SteeringParameters();
+
+    float elapsedNewNodeTime = 0.0f;
+    float growthSpeed = 0.0f;
+
+
+    //Vector2 growthDirection = new Vector2(0.0f, 1.0f);
 
     #region Getters and Setters
     //Pure Getters
+    //public ref readonly SteeringParameters GetSteering() { return ref steering; }
+
     private Spline Spline 
     {
         get
@@ -65,6 +78,13 @@ public class GrowingSpline : MonoBehaviour
             return GetPoint(TopNodeIndex);
         }
     }
+    public Vector2 TopNodeWorld 
+    {
+        get
+        {
+            return GetPoint(TopNodeIndex) + (Vector2)transform.position;
+        }
+    }
     public Bounds Bounds 
     {
         get 
@@ -76,7 +96,7 @@ public class GrowingSpline : MonoBehaviour
     {
         get 
         {
-            return initialGrowthSpeed;
+            return maxLinearSpeed;
         }
     }
 
@@ -93,15 +113,33 @@ public class GrowingSpline : MonoBehaviour
         }
     }
     //Always is normalized
-    public Vector2 GrowthDirection 
+    public Vector2 GrowthDirection
+    {
+        get
+        {
+            return steering.direction;
+        }
+        set
+        {
+            steering.direction = value;
+        }
+    }
+    public float Orientation
+    {
+        get
+        {
+            return steering.Orientation;
+        }
+        set
+        {
+            steering.Orientation = Mathf.Clamp(value, Mathf.Deg2Rad * maxAngularWidthDeg, (Mathf.PI / 2.0f) + (Mathf.Deg2Rad * maxAngularWidthDeg));
+        }
+    }
+    public Vector2 LinearVelocity 
     {
         get 
         {
-            return growthDirection;
-        }
-        set 
-        {
-            growthDirection = value;
+            return GrowthDirection* growthSpeed;
         }
     }
     public float GrowthSpeed 
@@ -128,14 +166,14 @@ public class GrowingSpline : MonoBehaviour
         }
         Spline.SetPosition(nodeIndex, position);
     }
-        #endregion SetFunctions
-        #region GetFunctions
+    #endregion SetFunctions
+    #region GetFunctions
         /// <summary>
         /// Get any node on the TreeSpline
         /// </summary>
         /// <param name="nodeIndex"></param>
         /// <returns></returns>
-        public Vector2 GetPoint(int nodeIndex)
+    public Vector2 GetPoint(int nodeIndex)
     {
         if (nodeIndex >= Spline.GetPointCount())
         {
@@ -248,10 +286,12 @@ public class GrowingSpline : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //Get components
         spriteController = GetComponent<SpriteShapeController>();
         spriteRenderer = GetComponent<SpriteShapeRenderer>();
 
-        growthSpeed = initialGrowthSpeed;
+        growthSpeed = maxLinearSpeed;
+        steering.Orientation = Mathf.PI / 2.0f; // Starting 90degrees (upwards)
 
         for (int node = 0; node < SplineCount; node++)
         {
@@ -274,14 +314,17 @@ public class GrowingSpline : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector2 newPosition = TopNode + (growthSpeed * growthDirection * Time.deltaTime);
+        Vector2 newPosition = TopNode + (steering.linearVelocity * Time.deltaTime);
         Spline.SetPosition(TopNodeIndex, newPosition);
-        Spline.SetLeftTangent(TopNodeIndex, -growthDirection * curviness);
+        Spline.SetLeftTangent(TopNodeIndex, -steering.direction * curviness);
     }
 
     // Update is called once per frame
     void Update()
     {
+        //Setting new linearVelocity
+        steering.linearVelocity = steering.direction * growthSpeed;
+
         //New position + tangent of last node
         elapsedNewNodeTime += Time.deltaTime;
 
@@ -332,7 +375,9 @@ public class GrowingSpline : MonoBehaviour
         if (spriteRenderer)
             Gizmos.DrawWireCube(Bounds.center, Bounds.size);
 
-        Vector3 temp = growthDirection;
+        Vector3 temp = steering.direction;
+        
+
         Debug.DrawLine(gameObject.transform.position, gameObject.transform.position + temp, Color.green);
 
         if (spriteController) 
