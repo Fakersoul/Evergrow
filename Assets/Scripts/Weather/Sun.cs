@@ -27,8 +27,17 @@ public class Sun : MonoBehaviour
 
     private void Start()
     {
-        leftPoint = transform.position + new Vector3(-length, 0.0f);
-        rightPoint = transform.position + new Vector3(length, 0.0f);
+
+
+
+        //transform.position = Camera.main.ScreenToWorldPoint(new Vector2(0, 1));
+        //length = Camera.main.ScreenToWorldPoint(new Vector2(1, 0)).x;
+
+
+        leftPoint = new Vector3(-length, 0.0f);
+        rightPoint = new Vector3(length, 0.0f);
+
+
     }
 
     void Update()
@@ -37,7 +46,7 @@ public class Sun : MonoBehaviour
         for (int i = 0; i < amountRays; i++)
         {
             amount += 1.0f / (amountRays + 1);
-            Vector2 rayLocation = Vector2.Lerp(leftPoint, rightPoint, amount);
+            Vector2 rayLocation = Vector2.Lerp(leftPoint, rightPoint, amount) + (Vector2)transform.position;
 
             RaycastHit2D hit = Physics2D.Raycast(rayLocation, direction);
 
@@ -59,7 +68,7 @@ public class Sun : MonoBehaviour
         for (int i = 0; i < amountRays; i++)
         {
             amount += 1.0f / (amountRays + 1);
-            Vector2 rayLocation = Vector2.Lerp(leftPoint, rightPoint, amount);
+            Vector2 rayLocation = Vector2.Lerp(leftPoint, rightPoint, amount) + (Vector2)transform.position;
 
             Gizmos.color = Color.magenta;
             Gizmos.DrawLine(rayLocation, rayLocation + direction);
