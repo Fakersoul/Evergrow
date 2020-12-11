@@ -555,6 +555,10 @@ PrefabInstance:
       propertyPath: influenceKeys.Array.data[0].influecnePercentage
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3772081931127286200, guid: 542f926d371aed7468850a64b3633c0b, type: 3}
+      propertyPath: sunDecline
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 542f926d371aed7468850a64b3633c0b, type: 3}
 --- !u!1 &329139024
@@ -1157,7 +1161,7 @@ MonoBehaviour:
   m_RenderShadows: 0
   m_RequiresDepthTextureOption: 0
   m_RequiresOpaqueTextureOption: 1
-  m_CameraType: 0
+  m_CameraType: 1
   m_Cameras: []
   m_RendererIndex: -1
   m_VolumeLayerMask:
@@ -2156,6 +2160,10 @@ PrefabInstance:
     - target: {fileID: 3438270542261010865, guid: 542f926d371aed7468850a64b3633c0b, type: 3}
       propertyPath: m_IsTrigger
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3772081931127286200, guid: 542f926d371aed7468850a64b3633c0b, type: 3}
+      propertyPath: sunDecline
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 542f926d371aed7468850a64b3633c0b, type: 3}
