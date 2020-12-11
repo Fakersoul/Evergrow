@@ -4,18 +4,12 @@ using UnityEngine;
 
 [RequireComponent(typeof(GrowingSpline))]
 [DisallowMultipleComponent]
-public class AIController : MonoBehaviour
+public class AIController : TreeController
 {
-    [SerializeField]
-    Avoidance avoidance = new Avoidance(5.0f, 2.0f, 10.0f);
-    [SerializeField]
-    float weightAvoidance = 1.0f;
     [SerializeField]
     Wander wander = new Wander(10.0f, 1.0f, 0.05f, Mathf.PI / 2.0f);
     [SerializeField]
-    float weightWanderWhileAvoiding = 0.2f;
-    [SerializeField]
-    float weightWanderWhileSeeking = 1.2f;
+    float weightWander = 1.2f;
     [SerializeField]
     Seek seek = new Seek();
     [SerializeField]
@@ -23,45 +17,40 @@ public class AIController : MonoBehaviour
     [SerializeField]
     float weightSeek = 0.2f;
 
-
     PrioritySteering behaviour = new PrioritySteering();
 
-    GrowingSpline spline = null;
     [SerializeField]
     float rayOffset = 2.0f;
 
 
     // Start is called before the first frame update
-    void Start()
+    protected override void Start()
     {
+        base.Start();
+
         if (!player)
             Debug.LogError("No player attached");
 
-        spline = GetComponent<GrowingSpline>();
-
-        behaviour.AddBehaviour(avoidance);
-
         behaviour.AddBehaviour(new BlendedSteering(new List<BlendedSteering.WeightedBehaviour>()
                 {
-                    new BlendedSteering.WeightedBehaviour(wander, weightWanderWhileSeeking),
-                    new BlendedSteering.WeightedBehaviour(seek, weightSeek)
+                    new BlendedSteering.WeightedBehaviour(wander, weightWander)
+                    //,
+                    //new BlendedSteering.WeightedBehaviour(seek, weightSeek)
                 }));
     }
 
     // Update is called once per frame
-    void Update()
+    protected override void Update()
     {
+        base.Update();
+
+        if (Avoided)
+            wander.WanderAngle = spline.Orientation;
+
         SteeringParameters parameters = new SteeringParameters();
         parameters.position = spline.TopNodeWorld;
         parameters.linearVelocity = spline.LinearVelocity;
-
-        //RaycastHit2D hit = Physics2D.Raycast(spline.TopNodeWorld + (spline.GrowthDirection * rayOffset), spline.GrowthDirection);
-        //avoidance.SetTarget(hit.point);
-
-        if (spline.Orientation > Mathf.PI / 2.0f)
-            avoidance.AngleOffset = -Mathf.Abs(avoidance.AngleOffset);
-        else
-            avoidance.AngleOffset = Mathf.Abs(avoidance.AngleOffset);
+        parameters.Orientation = spline.Orientation; //Also sets direction
 
         seek.SetTarget(player.TopNodeWorld);
 
@@ -69,8 +58,10 @@ public class AIController : MonoBehaviour
         spline.GrowthDirection = newDirection.linearVelocity;
     }
 
-    void OnDrawGizmosSelected() 
+    protected override void OnDrawGizmosSelected() 
     {
+        base.OnDrawGizmosSelected();
+
         if (!spline)
             return;
 

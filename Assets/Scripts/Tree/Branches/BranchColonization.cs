@@ -164,22 +164,25 @@ public class BranchColonization : MonoBehaviour
             if (!removed)
             {
                 //If there was no new node found (could be because of a smaller distance) but there was a previous valid node
-                if (attractor.AttractingNode == null && attractor.PreviousAttractingNode != null)
-                {
-                    GameObject newBranch = Instantiate(branch, gameObject.transform.position + (Vector3)attractor.PreviousAttractingNode.Position, new Quaternion(), attractor.PreviousAttractingNode.Branch.transform);
+                
+                //BUG SPLASH!!!!
+
+                //if (attractor.AttractingNode == null && attractor.PreviousAttractingNode != null)
+                //{
+                //    GameObject newBranch = Instantiate(branch, gameObject.transform.position + (Vector3)attractor.PreviousAttractingNode.Position, new Quaternion(), attractor.PreviousAttractingNode.Branch.transform);
 
 
-                    GrowingSpline branchSpline = newBranch.GetComponent<GrowingSpline>();
+                //    GrowingSpline branchSpline = newBranch.GetComponent<GrowingSpline>();
                     
-                    branchSpline.GrowthDirection = (attractor.Position - attractor.PreviousAttractingNode.Position).normalized;
-                    branchSpline.SpriteShape = branchGrowthController.gameObject.GetComponent<GrowingSpline>().SpriteShape;
+                //    branchSpline.GrowthDirection = (attractor.Position - attractor.PreviousAttractingNode.Position).normalized;
+                //    branchSpline.SpriteShape = branchGrowthController.gameObject.GetComponent<GrowingSpline>().SpriteShape;
 
 
-                    BranchController newBranchController = newBranch.GetComponent<BranchController>();
+                //    BranchController newBranchController = newBranch.GetComponent<BranchController>();
 
-                    addedNodes.Add(newBranchController.BranchTopNode);
-                    newBranchController.NodeOffset = attractor.PreviousAttractingNode.Position;
-                }
+                //    addedNodes.Add(newBranchController.BranchTopNode);
+                //    newBranchController.NodeOffset = attractor.PreviousAttractingNode.Position;
+                //}
             }
             else 
             {
@@ -209,6 +212,11 @@ public class BranchColonization : MonoBehaviour
         {
             nodes.Add(node);
         }
+
+
+        //Check if still growing branches
+        if (GetComponentInChildren<GrowingSpline>() == null)
+            Destroy(gameObject);
     }
 
     private void OnDrawGizmosSelected()

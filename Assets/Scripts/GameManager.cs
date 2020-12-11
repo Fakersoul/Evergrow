@@ -5,26 +5,31 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [SerializeField]
-    GameObject leftTree;
+    GrowingSpline leftTree;
     [SerializeField]
-    GameObject playerTree;
+    GrowingSpline playerTree;
     [SerializeField]
-    GameObject rightTree;
+    GrowingSpline rightTree;
 
 #if UNITY_EDITOR
     [SerializeField]
     float timeScale = 1.0f;
 #endif
-    // Start is called before the first frame update
-    void Start()
-    {
 
+    public GrowingSpline GetHighestTree() 
+    {
+        GrowingSpline highestTree = playerTree;
+        float height = playerTree.GetPointWorldPos(playerTree.TopNodeIndex).y;
+
+        if (height < leftTree.GetPointWorldPos(playerTree.TopNodeIndex).y)
+            highestTree = leftTree;
+
+        if (height < rightTree.GetPointWorldPos(playerTree.TopNodeIndex).y)
+            highestTree = rightTree;
+
+        return highestTree;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-    }
 
 #if UNITY_EDITOR
     private void OnValidate()

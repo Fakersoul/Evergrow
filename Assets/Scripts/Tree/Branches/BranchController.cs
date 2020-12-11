@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
-
+using UnityEngine.U2D;
 //Spline is being transformed later
 
 [RequireComponent(typeof(GrowingSpline))]
+[RequireComponent(typeof(SpriteShapeRenderer))]
 [DisallowMultipleComponent]
 public class BranchController : MonoBehaviour
 {
@@ -18,6 +19,7 @@ public class BranchController : MonoBehaviour
     public Vector2 NodeOffset { get { return nodeOffset; } set { nodeOffset = value; } }
 
     GrowingSpline spline = null;
+    SpriteShapeRenderer spriteRenderer = null;
     Vector2 nodeOffset = Vector2.zero;
 
     private void Awake()
@@ -28,30 +30,38 @@ public class BranchController : MonoBehaviour
     void Start()
     {
         spline = GetComponent<GrowingSpline>();
+        spriteRenderer = GetComponent<SpriteShapeRenderer>();
         //collider = GetComponent<EdgeCollider2D>(); //TODO not safe
     }
 
     // Update is called once per frame
     void Update()
     {
-        BranchTopNode.Position = spline.TopNode + nodeOffset;
-
-        if (BranchTopNode.Position.sqrMagnitude > maxDistance)
+        if (spriteRenderer.isVisible)
         {
-            spline.enabled = false;
+            BranchTopNode.Position = spline.TopNode + nodeOffset;
+
+            if (BranchTopNode.Position.sqrMagnitude > maxDistance)
+            {
+                spline.enabled = false;
+            }
+
+            if (BranchTopNode.InfluencingAttractors.Count == 0)
+                return;
+
+            Vector2 direction = Vector2.zero;
+            foreach (BranchColonization.Attractor attractor in BranchTopNode.InfluencingAttractors)
+            {
+                direction += (attractor.Position - BranchTopNode.Position);
+            }
+            direction.Normalize();
+            //direction = new Vector2(Mathf.Lerp(spline.GrowthDirection.x, direction.x, sensitivity), Mathf.Lerp(spline.GrowthDirection.y, direction.y, sensitivity));
+            spline.GrowthDirection = direction;
         }
-
-        if (BranchTopNode.InfluencingAttractors.Count == 0)
-            return;
-
-        Vector2 direction = Vector2.zero;
-        foreach (BranchColonization.Attractor attractor in BranchTopNode.InfluencingAttractors)
+        else 
         {
-            direction += (attractor.Position - BranchTopNode.Position);
+            Destroy(gameObject);
         }
-        direction.Normalize();
-        //direction = new Vector2(Mathf.Lerp(spline.GrowthDirection.x, direction.x, sensitivity), Mathf.Lerp(spline.GrowthDirection.y, direction.y, sensitivity));
-        spline.GrowthDirection = direction;
     }
 
     private void OnDrawGizmosSelected()

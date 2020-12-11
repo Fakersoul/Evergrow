@@ -263,6 +263,38 @@ public class GrowingSpline : MonoBehaviour
     }
     #endregion GetFunctions
 
+    void CutTreeAt(int nodeIndex) 
+    {
+        if (nodeIndex == 0)
+            return;
+
+        Vector2 position = GetPoint(nodeIndex);
+
+        GameObject brokenTree = Instantiate(gameObject);
+        GrowingSpline splineBrokenTree = brokenTree.GetComponent<GrowingSpline>();
+
+        foreach (BranchColonization branch in GetComponentsInChildren<BranchColonization>())
+        {
+            if (branch.gameObject.transform.position.y > position.y) 
+            {
+                branch.gameObject.transform.parent = brokenTree.transform;       
+            }
+        }
+
+        Rigidbody2D rb = brokenTree.AddComponent<Rigidbody2D>();
+        
+
+        for (int i = 0; i < nodeIndex; i++)
+        {
+            splineBrokenTree.Spline.RemovePointAt(i);
+            splineBrokenTree.enabled = false;
+        }
+        for (int i = SplineCount - 1; i < nodeIndex + 1; i--)
+        {
+            Spline.RemovePointAt(i);
+        }
+    }
+
     #region InsertFunctions
     void InsertNode(Vector2 position)
     {
@@ -374,6 +406,12 @@ public class GrowingSpline : MonoBehaviour
 
                 elapsedNewNodeTime -= nodeInterval;
             }
+        }
+
+        //Check if node is out of screen
+        if (GetPointWorldPos(1).y < Camera.main.ScreenToWorldPoint(new Vector2(0, 0)).y) //Making sure that this is still visible
+        {
+            Spline.RemovePointAt(0);
         }
     }
 

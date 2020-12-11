@@ -49,7 +49,7 @@ MonoBehaviour:
   attractionRadius: 1
   attractorKillDistance: 0.3
   avoidanceDistance: 0.2
-  maxDistance: 8
+  maxDistance: 15
   branchGrowthController: {fileID: 6021836776614796695}
   branch: {fileID: 2490398206085353333, guid: 8c9c35682a4c3c34c801e05dc35c44bd, type: 3}
 --- !u!1001 &4797185720458748487
@@ -126,6 +126,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 454e24598c4d2f34da1c3511f9574bb9, type: 3}
+  m_Script: {fileID: 11500000, guid: 3e1d3f3d371802746bd28d8f1ee6a4bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

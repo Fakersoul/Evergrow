@@ -111,6 +111,7 @@ public class Wander : SteeringBehaviour
         Vector2 displacement = new Vector2(Mathf.Cos(wanderAngle), Mathf.Sin(wanderAngle)) * radius;
 
         wanderAngle += UnityEngine.Random.value * angleChange - angleChange / 2.0f;
+        //wanderAngle += UnityEngine.Random.value * angleChange - angleChange / 2.0f;
 
         steering.linearVelocity = circleCenter + displacement;
         steering.succesful = true;

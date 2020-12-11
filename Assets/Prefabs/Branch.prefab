@@ -67,7 +67,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e1d3f3d371802746bd28d8f1ee6a4bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxDistance: 10
+  maxDistance: 20
 --- !u!1971053207 &3842864386233464844
 SpriteShapeRenderer:
   m_ObjectHideFlags: 0

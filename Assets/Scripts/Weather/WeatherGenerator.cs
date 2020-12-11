@@ -60,6 +60,10 @@ public class WeatherGenerator : MonoBehaviour
     float timeUntilClear = 0.0f;
     float timeUntilStorm = 0.0f;
 
+    public void Lightning() 
+    {
+        
+    }
 
     // Start is called before the first frame update
     void Start()
